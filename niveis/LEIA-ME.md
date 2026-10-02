@@ -34,5 +34,9 @@ Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_correr`. A defini
 | `T` | Destino do voto "carregar" (moldura dourada) |
 | `r` | Limiar de sala: conta uma sala para os prazos. Faça uma linha vertical |
 | `z` | Zona de câmera aberta (o zoom se afasta para mostrar a escala) |
+| `t` | Altar das tranças (oferta do corpo) |
+| `m` | Altar da mão (oferta do corpo) |
+| `K` | Corda: só existe depois da oferta das tranças. Faça uma coluna vertical; a célula mais alta deve ficar logo acima do chão onde ela vai sair |
+| `M` | Mãozinha de cera na parede: vira apoio (de mão única: atravessa por baixo) depois da oferta da mão, só quando ela está perto. Espaçamento vertical ideal: 2 tiles |
 
 Com **Tab** ligado, as zonas `r` e `z` aparecem coloridas.

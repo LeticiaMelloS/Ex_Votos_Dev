@@ -1,0 +1,37 @@
+;; P3 — Corpo como moeda
+@nome P3 — O corpo como moeda
+@dica Altares de oferta (E) pedem uma parte do corpo. Na corda: segure Espaço/W para subir, S para descer, uma direção para soltar
+;; Pergunta: perder uma capacidade parece significativo ou só frustrante?
+;; Sala 1: a parede é alta demais. O altar das tranças transforma a trança em corda.
+;; Sala 2: uma borda para agarrar (a última vez que ela consegue).
+;; Sala 3: o fosso da parede de mãos. Sem ofertar a mão, não há saída.
+####################################################################################################
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzzz...........................#
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzzz...........................#
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzzz.......................G...#
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzzz.......................G...#
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzMM############################
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#............................................zzzzzzzzzzzzzzzzzzzzzzzzzMM############################
+#...................................#########zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#...................................#########zzzzzzzzzzzzzzzzzzzzzzzMMzz############################
+#......................K......C.....#########zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzMM############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzMMzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzMM############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzMMzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzMM############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzMMzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzzz############################
+#......................K#####################zzzzzzzzzzzzzzzzzzzzzzzzzMM############################
+#..P............t......K#####################zzzzzCzzzzzzzzzmzzzzzzzzzzz############################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################

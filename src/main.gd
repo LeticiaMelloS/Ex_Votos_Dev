@@ -1,10 +1,11 @@
 extends Node2D
 ## Ponto de entrada dos protótipos.
-## F1/F2 trocam de fase, R reinicia, Tab mostra o debug. Ver README.md.
+## F1/F2/F3 trocam de fase, R reinicia, Tab mostra o debug. Ver README.md.
 
 const NIVEIS := [
 	"res://niveis/p1_movimento.txt",
 	"res://niveis/p2_promessas.txt",
+	"res://niveis/p3_corpo.txt",
 ]
 const ZOOM_NORMAL := 1.0
 const ZOOM_ABERTO := 0.5
@@ -12,6 +13,7 @@ const ZOOM_ABERTO := 0.5
 var nivel: Nivel
 var jogadora: Protagonista
 var promessas: Promessas
+var oferendas: Oferendas
 var camera: Camera2D
 var hud: Hud
 var indice := 0
@@ -35,7 +37,7 @@ func carregar_nivel(i: int) -> void:
 	indice = i
 	_terminou = false
 	_fechar_menu()
-	for n in [nivel, jogadora, promessas, camera]:
+	for n in [nivel, jogadora, promessas, oferendas, camera]:
 		if n != null:
 			n.queue_free()
 	for n in _camadas:
@@ -44,6 +46,7 @@ func carregar_nivel(i: int) -> void:
 	nivel = null
 	jogadora = null
 	promessas = null
+	oferendas = null
 	camera = null
 
 	nivel = Nivel.new()
@@ -52,6 +55,7 @@ func carregar_nivel(i: int) -> void:
 		return
 
 	jogadora = Protagonista.new()
+	jogadora.nivel = nivel
 	add_child(jogadora)
 	respawn = nivel.pe_da_celula(nivel.inicio)
 	jogadora.reiniciar_em(respawn)
@@ -90,7 +94,13 @@ func carregar_nivel(i: int) -> void:
 	promessas.mensagem.connect(hud.mostrar_mensagem)
 	add_child(promessas)
 
-	hud.definir_titulo("%s   ·   F1/F2 fases · R reinicia · Tab debug" % nivel.meta.get("nome", "Protótipo"))
+	oferendas = Oferendas.new()
+	oferendas.nivel = nivel
+	oferendas.jogadora = jogadora
+	oferendas.mensagem.connect(hud.mostrar_mensagem)
+	add_child(oferendas)
+
+	hud.definir_titulo("%s   ·   F1/F2/F3 fases · R reinicia · Tab debug" % nivel.meta.get("nome", "Protótipo"))
 	if nivel.meta.has("dica"):
 		hud.mostrar_mensagem(nivel.meta["dica"], 6.0)
 
@@ -108,6 +118,7 @@ func _physics_process(_delta: float) -> void:
 	if jogadora == null or _terminou:
 		return
 	promessas.processar()
+	oferendas.processar()
 	var cel := nivel.celula(jogadora.centro())
 	var pes := nivel.celula(jogadora.global_position - Vector2(0, 10))
 	if cel == "C" or pes == "C":
@@ -120,7 +131,7 @@ func _physics_process(_delta: float) -> void:
 	if cel == "G":
 		_terminou = true
 		jogadora.controle_ativo = false
-		hud.mostrar_mensagem("Fim do protótipo. Promessas cumpridas: %d · quebradas: %d.  R reinicia, F1/F2 troca de fase." % [promessas.cumpridas, promessas.quebradas], 999.0)
+		hud.mostrar_mensagem("Fim do protótipo. Promessas cumpridas: %d · quebradas: %d.  R reinicia, F1/F2/F3 troca de fase." % [promessas.cumpridas, promessas.quebradas], 999.0)
 
 
 func _process(delta: float) -> void:
@@ -129,29 +140,34 @@ func _process(delta: float) -> void:
 	# Câmera: segue com folga na direção do olhar; abre o zoom nas zonas "z".
 	var alvo := jogadora.global_position + Vector2(jogadora.direcao * 90, -80)
 	camera.global_position = camera.global_position.lerp(alvo, 1.0 - exp(-delta * 4.0))
-	var z := ZOOM_ABERTO if nivel.celula(jogadora.centro()) == "z" else ZOOM_NORMAL
+	var aberta := nivel.celula(jogadora.centro()) == "z" or nivel.celula(jogadora.centro() - Vector2(0, Nivel.TILE)) == "z"
+	var z := ZOOM_ABERTO if aberta else ZOOM_NORMAL
 	camera.zoom = camera.zoom.lerp(Vector2(z, z), 1.0 - exp(-delta * 1.2))
 
 	if _escuridao:
 		var tela := get_viewport().get_canvas_transform()
 		var mat := _escuridao.material as ShaderMaterial
-		var vela := jogadora.global_position + Vector2(jogadora.direcao * 16, -jogadora.altura_atual() * 0.5 - 16)
+		var vela := jogadora.global_position + jogadora.posicao_vela()
 		mat.set_shader_parameter("centro", tela * vela)
 		mat.set_shader_parameter("raio", jogadora.raio_da_luz() * tela.get_scale().x)
 
 	var altar := _altar_proximo()
 	if _menu_altar != "":
 		hud.definir_dica("")
+	elif nivel.altares_oferta.has(altar):
+		hud.definir_dica("E — ofertar no altar")
 	elif altar != "":
 		hud.definir_dica("E — rezar no altar")
 	else:
 		hud.definir_dica("")
 
 	if hud.debug_visivel():
-		hud.definir_debug("FPS %d   Luz: %s   Pulos fortes: %d\n%s" % [
+		hud.definir_debug("FPS %d   Luz: %s   Pulos fortes: %d   Tranças: %s   Mão: %s\n%s" % [
 			Engine.get_frames_per_second(),
 			"acesa" if jogadora.luz_acesa else "apagada",
 			jogadora.pulos_fortes,
+			"sim" if jogadora.tem_trancas else "ofertadas",
+			"sim" if jogadora.tem_mao else "ofertada",
 			promessas.resumo_debug(),
 		])
 
@@ -164,6 +180,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 			KEY_F2:
 				carregar_nivel(1)
+				return
+			KEY_F3:
+				carregar_nivel(2)
 				return
 	if _menu_altar != "":
 		_input_menu(event)
@@ -184,14 +203,18 @@ func _altar_proximo() -> String:
 		return ""
 	var x := nivel.coluna(jogadora.global_position)
 	var y := floori((jogadora.global_position.y - 10) / Nivel.TILE)
-	for id in nivel.altares:
-		var a: Vector2i = nivel.altares[id]
-		if absi(a.x - x) <= 1 and absi(a.y - y) <= 1:
-			return id
+	for lista in [nivel.altares, nivel.altares_oferta]:
+		for id in lista:
+			var a: Vector2i = lista[id]
+			if absi(a.x - x) <= 1 and absi(a.y - y) <= 1:
+				return id
 	return ""
 
 
 func _abrir_menu(altar: String) -> void:
+	if nivel.altares_oferta.has(altar):
+		_abrir_menu_oferta(altar)
+		return
 	_menu_opcoes = promessas.opcoes_do_altar(altar)
 	if _menu_opcoes.is_empty():
 		hud.mostrar_mensagem("O altar está em silêncio.")
@@ -208,6 +231,16 @@ func _abrir_menu(altar: String) -> void:
 	hud.abrir_menu(texto)
 
 
+func _abrir_menu_oferta(altar: String) -> void:
+	if oferendas.ja_ofertado(altar):
+		hud.mostrar_mensagem("O altar guarda o que você deixou.")
+		return
+	_menu_altar = altar
+	_menu_opcoes = [{"tipo": "oferta"}]
+	jogadora.controle_ativo = false
+	hud.abrir_menu(oferendas.texto_do_altar(altar))
+
+
 func _input_menu(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
@@ -220,7 +253,10 @@ func _input_menu(event: InputEvent) -> void:
 		var altar := _menu_altar
 		var op := _menu_opcoes[i]
 		_fechar_menu()
-		promessas.escolher(op, altar)
+		if op["tipo"] == "oferta":
+			oferendas.ofertar(altar)
+		else:
+			promessas.escolher(op, altar)
 
 
 func _fechar_menu() -> void:

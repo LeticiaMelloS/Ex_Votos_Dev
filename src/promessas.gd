@@ -85,6 +85,9 @@ func opcoes_do_altar(altar: String) -> Array[Dictionary]:
 		var pid := partes[0]
 		if not CATALOGO.has(pid) or _feitas_no_altar.has(altar + ":" + pid):
 			continue
+		# Sem a mão, não há como carregar nada.
+		if CATALOGO[pid]["voto"]["tipo"] == "carregar" and not jogadora.tem_mao:
+			continue
 		var grupo := partes[1] if partes.size() > 1 else ""
 		ops.append({"tipo": "promessa", "id": pid, "grupo": grupo})
 	for c in criaturas:

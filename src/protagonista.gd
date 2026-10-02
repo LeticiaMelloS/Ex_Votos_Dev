@@ -26,17 +26,25 @@ const ALTURA_JOELHOS := 36.0
 @export var alcance_agarrar := 34.0
 @export var raio_luz := 300.0
 @export var raio_sem_luz := 70.0
+@export var vel_corda := 150.0
 
-# Capacidades: as ofertas do corpo (P3) vão desligar algumas destas.
+# Capacidades: as ofertas do corpo (P3) desligam algumas destas.
 var pode_agarrar := true
 var pode_correr := true
 var pode_pular := true
+# O corpo: o que ainda não foi ofertado.
+var tem_trancas := true
+var tem_mao := true
+
+## Usado para achar a corda (tranças) no mapa.
+var nivel: Nivel
 
 var controle_ativo := true
 var luz_acesa := true
 var carregando := false
 var ajoelhada := false
 var pendurada := false
+var na_corda := false
 var correndo := false
 var pulos_fortes := 0
 var direcao := 1
@@ -48,6 +56,7 @@ var _buffer := 0.0
 var _no_ar := false
 var _y_min := 0.0
 var _espera_agarrar := 0.0
+var _espera_corda := 0.0
 var _subindo := false
 var _tween: Tween
 var _parede_x := 0.0
@@ -92,6 +101,7 @@ func reiniciar_em(pos: Vector2) -> void:
 		_tween.kill()
 	_subindo = false
 	pendurada = false
+	na_corda = false
 	_no_ar = false
 	velocity = Vector2.ZERO
 	global_position = pos
@@ -100,12 +110,21 @@ func reiniciar_em(pos: Vector2) -> void:
 
 func _physics_process(delta: float) -> void:
 	_espera_agarrar -= delta
+	_espera_corda -= delta
 	if controle_ativo and Input.is_action_just_pressed("luz"):
 		definir_luz(not luz_acesa)
 	if _subindo:
 		return
 	if pendurada:
 		_processar_pendurada()
+		queue_redraw()
+		return
+	if na_corda:
+		_processar_corda()
+		queue_redraw()
+		return
+	if controle_ativo and _espera_corda <= 0.0 and not ajoelhada and _corda_aqui() 			and Input.is_action_pressed("pular"):
+		_agarrar_corda()
 		queue_redraw()
 		return
 
@@ -246,6 +265,45 @@ func _subir_degrau() -> void:
 	_tween.tween_callback(_fim_da_subida.bind(true))
 
 
+func _corda_aqui() -> bool:
+	return nivel != null and nivel.grupos_ativos["K"] and nivel.celula(centro()) == "K"
+
+
+func _agarrar_corda() -> void:
+	na_corda = true
+	pendurada = false
+	velocity = Vector2.ZERO
+	global_position.x = (nivel.coluna(global_position) + 0.5) * Nivel.TILE
+
+
+## Na corda: pular sobe, ajoelhar desce, qualquer direção solta com um pulinho.
+func _processar_corda() -> void:
+	velocity = Vector2.ZERO
+	if not controle_ativo:
+		return
+	var eixo := Input.get_axis("mover_esquerda", "mover_direita")
+	if eixo != 0.0:
+		direcao = 1 if eixo > 0.0 else -1
+		na_corda = false
+		_espera_corda = 0.35
+		velocity = Vector2(eixo * vel_andar, -200.0)
+		return
+	var dy := 0.0
+	if Input.is_action_pressed("pular"):
+		dy -= 1.0
+	if Input.is_action_pressed("ajoelhar"):
+		dy += 1.0
+	velocity = Vector2(0, dy * vel_corda)
+	move_and_slide()
+	if dy > 0.0 and is_on_floor():
+		na_corda = false
+		return
+	# Os pés não passam do alto da última célula de corda.
+	if nivel.celula(global_position - Vector2(0, 1)) != "K":
+		var linha := floori((global_position.y - 1.0) / Nivel.TILE)
+		global_position.y = (linha + 1) * Nivel.TILE
+
+
 func _soltar() -> void:
 	pendurada = false
 	_espera_agarrar = 0.3
@@ -274,22 +332,36 @@ func _fim_da_subida(agachada: bool) -> void:
 		_definir_ajoelhada(true)
 
 
+## Posição da chama da vela, relativa aos pés.
+func posicao_vela() -> Vector2:
+	var h := altura_atual()
+	# Sem a mão da frente, a vela passa para a outra mão.
+	var lado := direcao if tem_mao else -direcao
+	if pendurada or na_corda:
+		return Vector2(lado * (LARGURA * 0.5), -h - 10)
+	return Vector2(lado * (LARGURA * 0.5 + 3), -h * 0.5 - 16)
+
+
 func _draw() -> void:
 	var h := altura_atual()
 	var cor := Color(0.07, 0.06, 0.06)
 	draw_rect(Rect2(-LARGURA * 0.5, -h, LARGURA, h), cor)
 	# Olho: mostra para onde ela olha.
 	draw_rect(Rect2(direcao * 5 - 3, -h + 9, 6, 5), Color(0.86, 0.82, 0.74))
-	# Tranças.
-	draw_line(Vector2(-direcao * 9, -h + 12), Vector2(-direcao * 15, -h + 34), cor, 4)
+	if tem_trancas:
+		draw_line(Vector2(-direcao * 9, -h + 12), Vector2(-direcao * 15, -h + 34), cor, 4)
+	else:
+		# Cabelo curto, cortado rente.
+		draw_line(Vector2(-direcao * 10, -h + 4), Vector2(-direcao * 14, -h + 14), cor, 4)
+	if not tem_mao:
+		# Cera, não sangue: o braço da frente termina numa superfície lisa de cera.
+		draw_circle(Vector2(direcao * (LARGURA * 0.5 + 1), -h * 0.5), 4.0, Nivel.COR_CERA)
 
-	var mao := Vector2(direcao * (LARGURA * 0.5 + 3), -h * 0.5)
-	if pendurada:
-		mao = Vector2(direcao * (LARGURA * 0.5), -h + 6)
 	# Vela (cera) e chama.
-	draw_line(mao, mao + Vector2(0, -12), Nivel.COR_CERA, 5)
+	var chama := posicao_vela()
+	draw_line(chama + Vector2(0, 16), chama + Vector2(0, 4), Nivel.COR_CERA, 5)
 	if luz_acesa:
-		draw_circle(mao + Vector2(0, -16), 4, Color(1.0, 0.78, 0.3))
+		draw_circle(chama, 4, Color(1.0, 0.78, 0.3))
 	if carregando:
 		draw_rect(Rect2(-8, -h - 22, 16, 22), Nivel.COR_CERA)
 

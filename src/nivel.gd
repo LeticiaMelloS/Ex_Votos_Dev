@@ -20,7 +20,10 @@ var altura := 0
 var meta := {}
 var altares := {}  # id do altar (String) -> Vector2i
 var inicio := Vector2i.ZERO
-var grupos_ativos := {"#": true, "D": true, "F": true, "B": false, "H": false}
+var grupos_ativos := {"#": true, "D": true, "F": true, "B": false, "H": false, "K": false}
+## Altares de oferta do corpo: "t" (tranças) e "m" (mão) -> Vector2i.
+var altares_oferta := {}
+var oferendas: Array[String] = []  # altares de oferta já usados
 var ex_votos: Array[Vector2] = []  # marcas de promessas cumpridas
 var mostrar_debug := false:
 	set(v):
@@ -31,6 +34,8 @@ var mostrar_debug := false:
 var brilho := Node2D.new()
 
 var _corpos := {}  # letra -> StaticBody2D
+var _maos := {}  # Vector2i -> CollisionShape2D (mãos da parede, uma por célula)
+var _maos_ativas := {}  # Vector2i -> true
 
 
 func carregar(caminho: String) -> bool:
@@ -63,9 +68,12 @@ func carregar(caminho: String) -> bool:
 				inicio = Vector2i(x, y)
 			elif "123456789".contains(c):
 				altares[c] = Vector2i(x, y)
+			elif c == "t" or c == "m":
+				altares_oferta[c] = Vector2i(x, y)
 
 	for letra in GRUPOS_SOLIDOS:
 		_criar_colisao(letra)
+	_criar_maos()
 	brilho.draw.connect(_desenhar_brilho)
 	return true
 
@@ -111,11 +119,57 @@ func _criar_colisao(letra: String) -> void:
 			corpo.add_child(forma)
 
 
-## Liga (ativo = true) ou desliga um grupo de tiles: portões, pontes, caminhos ocultos.
+## Mãos da parede ("M"): plataformas de mão única, uma por célula.
+## Só existem depois da oferta da mão, e só perto da protagonista.
+func _criar_maos() -> void:
+	var corpo := StaticBody2D.new()
+	corpo.collision_layer = 1
+	corpo.collision_mask = 0
+	add_child(corpo)
+	for y in altura:
+		for x in largura:
+			if grade[y][x] != "M":
+				continue
+			var forma := CollisionShape2D.new()
+			var ret := RectangleShape2D.new()
+			ret.size = Vector2(TILE, 10)
+			forma.shape = ret
+			forma.position = Vector2((x + 0.5) * TILE, y * TILE + 5)
+			forma.one_way_collision = true
+			forma.disabled = true
+			corpo.add_child(forma)
+			_maos[Vector2i(x, y)] = forma
+
+
+## Abre as mãos que estão a menos de `raio` px do ponto (se a mão foi ofertada).
+func atualizar_maos(perto_de: Vector2, ofertada: bool, raio := 170.0) -> void:
+	var mudou := false
+	for celula_mao in _maos:
+		var centro_mao := Vector2((celula_mao.x + 0.5) * TILE, (celula_mao.y + 0.5) * TILE)
+		var ativa := ofertada and centro_mao.distance_to(perto_de) < raio
+		if ativa != _maos_ativas.has(celula_mao):
+			mudou = true
+			_maos[celula_mao].set_deferred("disabled", not ativa)
+			if ativa:
+				_maos_ativas[celula_mao] = true
+			else:
+				_maos_ativas.erase(celula_mao)
+	if mudou:
+		brilho.queue_redraw()
+
+
+func registrar_oferenda(altar: String) -> void:
+	oferendas.append(altar)
+	queue_redraw()
+	brilho.queue_redraw()
+
+
+## Liga (ativo = true) ou desliga um grupo de tiles: portões, pontes, caminhos ocultos, corda.
 func ativar_grupo(letra: String, ativo: bool) -> void:
 	grupos_ativos[letra] = ativo
-	for forma in _corpos[letra].get_children():
-		forma.set_deferred("disabled", not ativo)
+	if _corpos.has(letra):
+		for forma in _corpos[letra].get_children():
+			forma.set_deferred("disabled", not ativo)
 	queue_redraw()
 	brilho.queue_redraw()
 
@@ -171,6 +225,20 @@ func _draw() -> void:
 					draw_line(p - Vector2(9, 26), p - Vector2(-9, 26), COR_PEDRA, 3)
 				"G":
 					draw_rect(r.grow(-4), Color(1, 1, 1, 0.6))
+				"K":
+					# A trança-corda: escura, trançada (cabelo, não cera).
+					if grupos_ativos["K"]:
+						var meio := r.position.x + TILE * 0.5
+						draw_line(Vector2(meio, r.position.y), Vector2(meio, r.end.y), COR_PEDRA, 5)
+						for i in 4:
+							var yy := r.position.y + i * 10 + 5
+							draw_line(Vector2(meio - 5, yy), Vector2(meio + 5, yy + 5), COR_PEDRA, 2)
+				"t":
+					# Depois da oferta, as tranças ficam penduradas no altar.
+					if oferendas.has("t"):
+						var topo := r.position + Vector2(TILE * 0.5, -TILE + 8)
+						draw_line(topo + Vector2(-5, 0), topo + Vector2(-8, 40), COR_PEDRA, 4)
+						draw_line(topo + Vector2(5, 0), topo + Vector2(8, 40), COR_PEDRA, 4)
 			if mostrar_debug and "zr".contains(c):
 				var cor := Color(0.2, 0.4, 1, 0.12) if c == "z" else Color(1, 0, 1, 0.35)
 				draw_rect(r, cor)
@@ -187,6 +255,16 @@ func _desenhar_brilho() -> void:
 				brilho.draw_rect(r, COR_CERA.darkened(0.12))
 			elif c == "T":
 				brilho.draw_rect(r.grow(-6), COR_OURO, false, 3)
+			elif c == "M":
+				_desenhar_mao(r, _maos_ativas.has(Vector2i(x, y)))
+			elif c == "t" or c == "m":
+				# Altar de oferta: moldura dourada com fundo de cera.
+				var ao := Rect2(x * TILE + 2, (y - 1) * TILE, TILE - 4, TILE * 2)
+				brilho.draw_rect(ao, Color(COR_CERA, 0.25))
+				brilho.draw_rect(ao, COR_OURO, false, 4)
+				if c == "m" and oferendas.has("m"):
+					brilho.draw_line(ao.position + Vector2(ao.size.x * 0.5, 4), ao.position + Vector2(ao.size.x * 0.5, 18), COR_CERA, 1)
+					brilho.draw_rect(Rect2(ao.position + Vector2(ao.size.x * 0.5 - 7, 18), Vector2(14, 18)), COR_CERA)
 			elif "123456789".contains(c):
 				# Altar: moldura dourada (vazada para não esconder a protagonista).
 				var a := Rect2(x * TILE + 4, (y - 1) * TILE + 2, TILE - 8, TILE * 2 - 2)
@@ -197,3 +275,16 @@ func _desenhar_brilho() -> void:
 		# Ex-voto de agradecimento: uma mãozinha de cera pendurada.
 		brilho.draw_line(p + Vector2(0, -95), p + Vector2(0, -80), COR_CERA, 1)
 		brilho.draw_rect(Rect2(p + Vector2(-6, -80), Vector2(12, 16)), COR_CERA)
+
+
+## Mãozinha de cera: fechada contra a parede, ou aberta como apoio.
+func _desenhar_mao(r: Rect2, aberta: bool) -> void:
+	if aberta:
+		brilho.draw_rect(Rect2(r.position.x, r.position.y, TILE, 10), COR_CERA)
+		for i in 4:
+			brilho.draw_rect(Rect2(r.position.x + 3 + i * 9, r.position.y - 7, 5, 8), COR_CERA)
+	else:
+		var c := r.get_center()
+		brilho.draw_rect(Rect2(c.x - 6, c.y - 8, 12, 14), Color(COR_CERA, 0.55))
+		for i in 3:
+			brilho.draw_rect(Rect2(c.x - 6 + i * 4.5, c.y - 14, 3, 7), Color(COR_CERA, 0.55))
