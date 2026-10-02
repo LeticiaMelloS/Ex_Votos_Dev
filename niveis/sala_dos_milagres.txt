@@ -7,6 +7,11 @@
 @altar 2 joelhos:D sem_luz:H
 @fim A parede inteira era uma mão. E ela está fechando os dedos.          — EX-VOTO —          (R reinicia)
 @fala Aqui ninguém entra de mão vazia.
+;; Arte do Espaço 4 (Sala das Velas). Coloque os PNGs em arte/provisoria/ com estes nomes.
+;; Ajuste x, y, altura e parallax olhando no jogo (R recarrega). Tab mostra a grade.
+@arte arquivo=res://arte/provisoria/ia_fundo_sala-velas_camada0.png x=94 y=16 altura=25 parallax=0.3 z=-20
+@arte arquivo=res://arte/provisoria/ia_fundo_sala-velas_camada1.png x=99 y=21 altura=19 parallax=0.6 z=-15
+@arte arquivo=res://arte/provisoria/ia_altar_promessa.png x=111 y=35 altura=5 recorte=papel z=-1
 ;; Bilhetes, da esquerda para a direita (textos de Game Design/design/bilhetes-de-graca.md)
 @bilhete Meu filho caiu do cavalo e ficou três dias sem acordar. Prometi trazer a cabeça dele em cera se ele abrisse os olhos. Abriu. Está aqui. Obrigada. — Mãe de um menino de Mariana
 @bilhete Andei de muleta onze anos. Deixo ela aqui porque não preciso mais. — J.

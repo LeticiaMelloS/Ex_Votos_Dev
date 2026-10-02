@@ -28,6 +28,11 @@ var bilhetes: Array[Dictionary] = []  # {"celula": Vector2i, "texto": String}
 var falas: Array[Dictionary] = []
 var oferendas: Array[String] = []  # altares de oferta já usados
 var ex_votos: Array[Vector2] = []  # marcas de promessas cumpridas
+## 0 = só greybox · 1 = arte com greybox translúcido por cima · 2 = só arte (colisão invisível).
+var modo_greybox := 0:
+	set(v):
+		modo_greybox = v
+		queue_redraw()
 var mostrar_debug := false:
 	set(v):
 		mostrar_debug = v
@@ -95,7 +100,7 @@ func _ler_meta(l: String) -> void:
 			meta["escuro"] = float(partes[1]) if partes.size() > 1 else 0.85
 		"altar":
 			meta["altar_" + partes[1]] = Array(partes.slice(2))
-		"bilhete", "fala":
+		"bilhete", "fala", "arte":
 			if not meta.has(partes[0]):
 				meta[partes[0]] = []
 			meta[partes[0]].append(resto)
@@ -224,21 +229,25 @@ func adicionar_ex_voto(pos: Vector2) -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, tamanho_px()), COR_PAPEL)
+	if modo_greybox == 0:
+		draw_rect(Rect2(Vector2.ZERO, tamanho_px()), COR_PAPEL)
+	var alfa_pedra := 1.0 if modo_greybox == 0 else (0.35 if modo_greybox == 1 else 0.0)
 	for y in altura:
 		for x in largura:
 			var c := grade[y][x]
 			var r := Rect2(x * TILE, y * TILE, TILE, TILE)
 			match c:
 				"#":
-					draw_rect(r, COR_PEDRA)
+					if alfa_pedra > 0.0:
+						draw_rect(r, Color(COR_PEDRA, alfa_pedra))
 				"D", "F":
 					if grupos_ativos[c]:
 						draw_rect(r, COR_PORTAO)
 						for i in 3:
 							draw_line(r.position + Vector2(8 + i * 12, 0), r.position + Vector2(8 + i * 12, TILE), COR_PEDRA, 3)
 				"~":
-					draw_rect(r, COR_VAZIO)
+					if alfa_pedra > 0.0:
+						draw_rect(r, Color(COR_VAZIO, alfa_pedra))
 				"e", "E":
 					# Degraus da escadaria (só marca visual; o chão real são os "#").
 					draw_line(r.position + Vector2(0, TILE - 2), r.end - Vector2(0, 2), COR_PORTAO, 2)

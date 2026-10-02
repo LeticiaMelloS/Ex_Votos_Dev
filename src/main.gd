@@ -1,6 +1,6 @@
 extends Node2D
 ## Ponto de entrada dos protótipos.
-## F1–F4 trocam de fase, F12 captura a tela, R reinicia, Tab mostra o debug. Ver README.md.
+## F1–F4 trocam de fase, F9 alterna greybox/arte, F12 captura a tela, R reinicia, Tab mostra o debug. Ver README.md.
 
 const NIVEIS := [
 	"res://niveis/p1_movimento.txt",
@@ -16,6 +16,7 @@ var nivel: Nivel
 var jogadora: Protagonista
 var promessas: Promessas
 var oferendas: Oferendas
+var arte: ArteDoNivel
 var camera: Camera2D
 var hud: Hud
 var indice := 0
@@ -41,7 +42,7 @@ func carregar_nivel(i: int) -> void:
 	_terminou = false
 	_falas_ditas.clear()
 	_fechar_menu()
-	for n in [nivel, jogadora, promessas, oferendas, camera]:
+	for n in [nivel, jogadora, promessas, oferendas, camera, arte]:
 		if n != null:
 			n.queue_free()
 	for n in _camadas:
@@ -52,6 +53,7 @@ func carregar_nivel(i: int) -> void:
 	promessas = null
 	oferendas = null
 	camera = null
+	arte = null
 
 	nivel = Nivel.new()
 	add_child(nivel)
@@ -106,7 +108,14 @@ func carregar_nivel(i: int) -> void:
 	oferendas.mensagem.connect(hud.mostrar_mensagem)
 	add_child(oferendas)
 
-	hud.definir_titulo("%s   ·   F1–F4 fases · R reinicia · Tab debug · F12 captura" % nivel.meta.get("nome", "Protótipo"))
+	# Arte por cima do greybox (linhas "@arte" do mapa).
+	arte = ArteDoNivel.new()
+	arte.camera = camera
+	add_child(arte)
+	if arte.montar(nivel, brilho) > 0:
+		nivel.modo_greybox = 1
+
+	hud.definir_titulo("%s   ·   F1–F4 fases · R reinicia · Tab debug · F9 greybox/arte · F12 captura" % nivel.meta.get("nome", "Protótipo"))
 	if nivel.meta.has("dica"):
 		hud.mostrar_mensagem(nivel.meta["dica"], 6.0)
 
@@ -206,6 +215,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 			KEY_F12:
 				_capturar_tela()
+				return
+			KEY_F9:
+				if nivel:
+					nivel.modo_greybox = (nivel.modo_greybox + 1) % 3
+					hud.mostrar_mensagem(["Só greybox", "Arte + greybox translúcido", "Só arte"][nivel.modo_greybox], 1.5)
 				return
 	if _menu_altar != "":
 		_input_menu(event)
