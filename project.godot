@@ -1,14 +1,23 @@
-; Arquivo de configuração do Godot. Pode ser editado pelo próprio editor
-; (Projeto > Configurações do Projeto).
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
+
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
 config/name="Ex-Voto (protótipos)"
 config/description="Protótipos em greybox: P1 movimento e escala, P2 promessas."
 run/main_scene="res://main.tscn"
-config/features=PackedStringArray("4.3", "GL Compatibility")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [display]
 
@@ -17,11 +26,6 @@ window/size/viewport_height=1080
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
-
-[physics]
-
-common/physics_ticks_per_second=60
 
 [rendering]
 
