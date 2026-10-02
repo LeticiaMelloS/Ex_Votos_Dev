@@ -1,0 +1,76 @@
+;; Greybox da fatia vertical. Desenho: Game Design/design/sala-dos-milagres-mapa.md
+@nome Sala dos Milagres — greybox da fatia vertical
+@dica Ela já chega sem as tranças. E lê bilhetes e reza nos altares · F12 captura a tela para desenhar por cima
+@escuro 0.55
+@sem_trancas
+@altar 1 vela_dentro:F
+@altar 2 joelhos:D sem_luz:H
+@fim A parede inteira era uma mão. E ela está fechando os dedos.          — EX-VOTO —          (R reinicia)
+@fala Aqui ninguém entra de mão vazia.
+;; Bilhetes, da esquerda para a direita (textos de Game Design/design/bilhetes-de-graca.md)
+@bilhete Meu filho caiu do cavalo e ficou três dias sem acordar. Prometi trazer a cabeça dele em cera se ele abrisse os olhos. Abriu. Está aqui. Obrigada. — Mãe de um menino de Mariana
+@bilhete Andei de muleta onze anos. Deixo ela aqui porque não preciso mais. — J.
+@bilhete Prometi voltar todo ano para agradecer. Voltei dois anos. Depois a vida apertou. Me perdoa.
+@bilhete Graça alcançada: a chuva veio no fim de março e a roça não morreu. Prometi uma perna de cera por cada filho que não passou fome. São cinco. — Família de Canindé
+@bilhete Pedi para meu marido voltar do garimpo. Voltou. Acendo esta vela do meu tamanho, como prometi.
+@bilhete Graça da minha alforria. Sete anos de trabalho e de reza. Deixo aqui meu retrato para que Nossa Senhora do Rosário me reconheça livre. — Irmão do Rosário
+@bilhete Se eu sarar desta febre, subo a escadaria de joelhos.
+@bilhete Prometi o que não era meu de prometer.
+@bilhete Toda mão aqui foi uma mão que pediu.
+@bilhete Pedi cura para a mão direita. Fiquei boa. Nunca trouxe a mão de cera. Hoje de noite eu ouço ela batendo na parede.
+########################################################################################################################################################################################################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzzr....ZZZZZZZZZZZZZZZZZ#
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzzr....ZZZZZZZZZZZZZZZZZ#
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzzr....ZZZZZZZZZZZZZZZZZ#
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzzr....ZZZZZZZZZZZZZZZZZ#
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzzr....ZZZZZZZZZZZZZZZZZ#
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzzr....ZZZZZZZZZZZZZZZGZ#
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzzr....ZZZCZZZZZZZZZZZGZ#
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...................r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r############################################r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r############################################r........................r..zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r############################################r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r############################################r........................r..zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r############################################r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............#...r........................r........................r..zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............#...r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............#...r........................r........................r..zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............#...r........................r.............eE.?...C...r..zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............#...r.......................###...........e##############zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............#...r...................HHH.#r...........e###############zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............#...r.......................#r..........e################zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............F...r...............HHH.....Dr.........e#################zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............F...r.......................Dr........e##################zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............F...r...................HHH.Dr.......e###################zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............F...r.......................Dr......e####################zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............F...r...............HHH.....Dr.....e#####################zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......................................r...............F...r.......................Dr....e######################zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.............................?.C.......r.....1...C.....F...r...?.T...?.2...........Dr..?e#######################zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz..........................###############################################..##########..#########################zzzzzzzzzzzzzzzzzzzzzzMM#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz..........................###############################################..##########..#########################zzzzzzzzzzzzzzzzzzzzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.....................####.###############################################...........r..#########################zzzzzzzzzzzzzzzzzzzzMMzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.................?........######################################################################################zzzzzCzzzmz?zzzzz?zzzzzz#######################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz................####......#####################################################################################################################################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz..........................#####################################################################################################################################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz...........####...........#####################################################################################################################################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz.......?..................#####################################################################################################################################
+#############zzzzzzzzzzzzzzzzzzzzzzzzzzzz......####................#####################################################################################################################################
+#............zzzzzzzzzzzzzzzzzzzzzzzzzzzz..........................#####################################################################################################################################
+#............zzzzzzzzzzzzzzzzzzzzzzzzzzzz.####.....................#####################################################################################################################################
+#..P.........zzz!zzzzzzz?zzzzzCzzzzzzzzzz..........................#####################################################################################################################################
+########################################################################################################################################################################################################
+########################################################################################################################################################################################################
+########################################################################################################################################################################################################
+########################################################################################################################################################################################################

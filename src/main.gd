@@ -1,14 +1,16 @@
 extends Node2D
 ## Ponto de entrada dos protótipos.
-## F1/F2/F3 trocam de fase, R reinicia, Tab mostra o debug. Ver README.md.
+## F1–F4 trocam de fase, F12 captura a tela, R reinicia, Tab mostra o debug. Ver README.md.
 
 const NIVEIS := [
 	"res://niveis/p1_movimento.txt",
 	"res://niveis/p2_promessas.txt",
 	"res://niveis/p3_corpo.txt",
+	"res://niveis/sala_dos_milagres.txt",
 ]
 const ZOOM_NORMAL := 1.0
 const ZOOM_ABERTO := 0.5
+const ZOOM_REVELACAO := 0.28
 
 var nivel: Nivel
 var jogadora: Protagonista
@@ -24,6 +26,7 @@ var _escuridao: ColorRect
 var _menu_altar := ""
 var _menu_opcoes: Array[Dictionary] = []
 var _terminou := false
+var _falas_ditas := {}
 
 
 func _ready() -> void:
@@ -36,6 +39,7 @@ func _ready() -> void:
 func carregar_nivel(i: int) -> void:
 	indice = i
 	_terminou = false
+	_falas_ditas.clear()
 	_fechar_menu()
 	for n in [nivel, jogadora, promessas, oferendas, camera]:
 		if n != null:
@@ -59,6 +63,8 @@ func carregar_nivel(i: int) -> void:
 	add_child(jogadora)
 	respawn = nivel.pe_da_celula(nivel.inicio)
 	jogadora.reiniciar_em(respawn)
+	if nivel.meta.has("sem_trancas"):
+		jogadora.tem_trancas = false
 
 	camera = Camera2D.new()
 	camera.limit_left = 0
@@ -100,7 +106,7 @@ func carregar_nivel(i: int) -> void:
 	oferendas.mensagem.connect(hud.mostrar_mensagem)
 	add_child(oferendas)
 
-	hud.definir_titulo("%s   ·   F1/F2/F3 fases · R reinicia · Tab debug" % nivel.meta.get("nome", "Protótipo"))
+	hud.definir_titulo("%s   ·   F1–F4 fases · R reinicia · Tab debug · F12 captura" % nivel.meta.get("nome", "Protótipo"))
 	if nivel.meta.has("dica"):
 		hud.mostrar_mensagem(nivel.meta["dica"], 6.0)
 
@@ -128,10 +134,14 @@ func _physics_process(_delta: float) -> void:
 			hud.mostrar_mensagem("Checkpoint.", 1.5)
 	if cel == "~" or pes == "~" or jogadora.global_position.y > nivel.tamanho_px().y + 200:
 		_renascer()
+	_checar_falas()
 	if cel == "G":
 		_terminou = true
 		jogadora.controle_ativo = false
-		hud.mostrar_mensagem("Fim do protótipo. Promessas cumpridas: %d · quebradas: %d.  R reinicia, F1/F2/F3 troca de fase." % [promessas.cumpridas, promessas.quebradas], 999.0)
+		if nivel.meta.has("fim"):
+			hud.mostrar_mensagem(nivel.meta["fim"], 999.0)
+			return
+		hud.mostrar_mensagem("Fim do protótipo. Promessas cumpridas: %d · quebradas: %d.  R reinicia, F1–F4 troca de fase." % [promessas.cumpridas, promessas.quebradas], 999.0)
 
 
 func _process(delta: float) -> void:
@@ -140,8 +150,13 @@ func _process(delta: float) -> void:
 	# Câmera: segue com folga na direção do olhar; abre o zoom nas zonas "z".
 	var alvo := jogadora.global_position + Vector2(jogadora.direcao * 90, -80)
 	camera.global_position = camera.global_position.lerp(alvo, 1.0 - exp(-delta * 4.0))
-	var aberta := nivel.celula(jogadora.centro()) == "z" or nivel.celula(jogadora.centro() - Vector2(0, Nivel.TILE)) == "z"
-	var z := ZOOM_ABERTO if aberta else ZOOM_NORMAL
+	var aqui := nivel.celula(jogadora.centro())
+	var acima := nivel.celula(jogadora.centro() - Vector2(0, Nivel.TILE))
+	var z := ZOOM_NORMAL
+	if aqui == "Z" or acima == "Z" or (_terminou and aqui == "G"):
+		z = ZOOM_REVELACAO
+	elif aqui == "z" or acima == "z":
+		z = ZOOM_ABERTO
 	camera.zoom = camera.zoom.lerp(Vector2(z, z), 1.0 - exp(-delta * 1.2))
 
 	if _escuridao:
@@ -154,6 +169,8 @@ func _process(delta: float) -> void:
 	var altar := _altar_proximo()
 	if _menu_altar != "":
 		hud.definir_dica("")
+	elif _bilhete_proximo() != "":
+		hud.definir_dica("E — ler o bilhete")
 	elif nivel.altares_oferta.has(altar):
 		hud.definir_dica("E — ofertar no altar")
 	elif altar != "":
@@ -184,6 +201,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_F3:
 				carregar_nivel(2)
 				return
+			KEY_F4:
+				carregar_nivel(3)
+				return
+			KEY_F12:
+				_capturar_tela()
+				return
 	if _menu_altar != "":
 		_input_menu(event)
 		return
@@ -194,8 +217,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		nivel.mostrar_debug = hud.debug_visivel()
 	elif event.is_action_pressed("interagir") and not _terminou:
 		var altar := _altar_proximo()
+		var bilhete := _bilhete_proximo()
 		if altar != "":
 			_abrir_menu(altar)
+		elif bilhete != "":
+			_menu_altar = "?"
+			_menu_opcoes = []
+			jogadora.controle_ativo = false
+			hud.abrir_menu("BILHETE\n\n%s\n\n\nEsc ou E — fechar" % bilhete)
 
 
 func _altar_proximo() -> String:
@@ -209,6 +238,43 @@ func _altar_proximo() -> String:
 			if absi(a.x - x) <= 1 and absi(a.y - y) <= 1:
 				return id
 	return ""
+
+
+## Texto do bilhete de graça ao alcance (ou "" se não houver).
+func _bilhete_proximo() -> String:
+	if jogadora == null or not jogadora.is_on_floor():
+		return ""
+	var x := nivel.coluna(jogadora.global_position)
+	var y := floori((jogadora.global_position.y - 10) / Nivel.TILE)
+	for b in nivel.bilhetes:
+		var c: Vector2i = b["celula"]
+		if absi(c.x - x) <= 1 and absi(c.y - y) <= 1:
+			return b["texto"]
+	return ""
+
+
+## NPCs falam uma vez, sozinhas, quando a protagonista chega perto.
+func _checar_falas() -> void:
+	var x := nivel.coluna(jogadora.global_position)
+	var y := floori((jogadora.global_position.y - 10) / Nivel.TILE)
+	for i in nivel.falas.size():
+		var c: Vector2i = nivel.falas[i]["celula"]
+		if not _falas_ditas.has(i) and absi(c.x - x) <= 3 and absi(c.y - y) <= 2:
+			_falas_ditas[i] = true
+			hud.mostrar_mensagem(nivel.falas[i]["texto"], 5.0)
+
+
+## F12: salva a tela sem os textos em C:\Dev\ex-voto\capturas, para desenhar por cima.
+func _capturar_tela() -> void:
+	var pasta := ProjectSettings.globalize_path("res://capturas")
+	DirAccess.make_dir_recursive_absolute(pasta)
+	hud.visible = false
+	await RenderingServer.frame_post_draw
+	var img := get_viewport().get_texture().get_image()
+	hud.visible = true
+	var nome := "%s/captura_%s.png" % [pasta, Time.get_datetime_string_from_system().replace(":", "-")]
+	img.save_png(nome)
+	hud.mostrar_mensagem("Captura salva em " + nome, 3.0)
 
 
 func _abrir_menu(altar: String) -> void:

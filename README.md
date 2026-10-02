@@ -23,7 +23,8 @@ Se o Godot avisar que o projeto é de uma versão anterior, aceite a conversão.
 | Escolher no altar | 1, 2, 3 | — |
 | Corda: subir / descer / soltar | segurar Espaço ou W / segurar S / uma direção | A / ↓ / direção |
 | Reiniciar fase | R | Back |
-| Trocar de fase | F1 / F2 / F3 | — |
+| Trocar de fase | F1 / F2 / F3 / F4 | — |
+| Capturar a tela sem textos (para desenhar por cima) | F12 → salva em `capturas/` | — |
 | Debug (FPS, promessas, zonas) | Tab | — |
 
 **Agarrar bordas:** no ar, perto de uma borda, segure a direção dela. Para subir, aperte pular.
@@ -39,6 +40,11 @@ Se o Godot avisar que o projeto é de uma versão anterior, aceite a conversão.
   - Uma borda para agarrar: a última vez que ela consegue.
   - Um fosso de onde só se sai ofertando a **mão**: ela perde o agarrar (e não pode mais fazer a promessa de carregar), mas as mãozinhas de cera da parede se abrem como apoio quando ela chega perto.
   - *Pergunta:* perder uma capacidade parece significativo ou só frustrante?
+- **Sala dos Milagres (F4): greybox da fatia vertical.** Os sete espaços do roteiro de 15 minutos (`Game Design/design/sala-dos-milagres-mapa.md`), juntando tudo:
+  - os 10 bilhetes de graça e a fala da benzedeira;
+  - a promessa-tutorial da vela e o altar de escolha (joelhos, sem luz ou túnel);
+  - a escadaria, a oferta da mão, a parede de mãos e a revelação final.
+  - Serve para testar o fluxo inteiro e como **base para desenhar por cima** (F12).
 
 ## Estrutura
 

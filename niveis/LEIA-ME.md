@@ -12,9 +12,12 @@ A protagonista tem ~1,75 tile de altura. Ela pula ~2,4 tiles e, agarrando a bord
 | `@dica Texto` | Mensagem mostrada ao entrar na fase |
 | `@escuro 0.8` | Fase escura; o número (0 a 1) é a intensidade |
 | `@altar 1 joelhos:D sem_luz:H` | Promessas que o altar 1 oferece. `:D` troca o grupo afetado pela graça |
+| `@sem_trancas` | A protagonista começa sem as tranças |
+| `@fim Texto` | Mensagem ao chegar no `G` |
+| `@bilhete Texto` / `@fala Texto` | Textos dos `?` e `!` (uma linha cada) |
 | `;; texto` | Comentário (ignorado) |
 
-Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_correr`. A definição de cada uma fica em `src/promessas.gd`.
+Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_correr`, `vela_dentro`. A definição de cada uma fica em `src/promessas.gd`.
 
 ## Legenda
 
@@ -38,5 +41,8 @@ Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_correr`. A defini
 | `m` | Altar da mão (oferta do corpo) |
 | `K` | Corda: só existe depois da oferta das tranças. Faça uma coluna vertical; a célula mais alta deve ficar logo acima do chão onde ela vai sair |
 | `M` | Mãozinha de cera na parede: vira apoio (de mão única: atravessa por baixo) depois da oferta da mão, só quando ela está perto. Espaçamento vertical ideal: 2 tiles |
+| `Z` | Zona de revelação: câmera bem aberta (o momento do colosso) |
+| `?` | Bilhete de graça. Os textos vêm das linhas `@bilhete`, na ordem da esquerda para a direita |
+| `!` | NPC que fala sozinha ao se aproximar. Textos nas linhas `@fala`, na mesma ordem |
 
 Com **Tab** ligado, as zonas `r` e `z` aparecem coloridas.

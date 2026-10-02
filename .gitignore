@@ -9,3 +9,6 @@ export_presets.cfg
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Capturas de tela (F12) para desenhar por cima
+capturas/

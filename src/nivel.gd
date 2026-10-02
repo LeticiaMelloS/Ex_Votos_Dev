@@ -23,6 +23,9 @@ var inicio := Vector2i.ZERO
 var grupos_ativos := {"#": true, "D": true, "F": true, "B": false, "H": false, "K": false}
 ## Altares de oferta do corpo: "t" (tranças) e "m" (mão) -> Vector2i.
 var altares_oferta := {}
+## Bilhetes de graça ("?") e falas de NPC ("!"), em ordem da esquerda para a direita.
+var bilhetes: Array[Dictionary] = []  # {"celula": Vector2i, "texto": String}
+var falas: Array[Dictionary] = []
 var oferendas: Array[String] = []  # altares de oferta já usados
 var ex_votos: Array[Vector2] = []  # marcas de promessas cumpridas
 var mostrar_debug := false:
@@ -74,6 +77,8 @@ func carregar(caminho: String) -> bool:
 	for letra in GRUPOS_SOLIDOS:
 		_criar_colisao(letra)
 	_criar_maos()
+	_ligar_textos("?", "bilhete", bilhetes)
+	_ligar_textos("!", "fala", falas)
 	brilho.draw.connect(_desenhar_brilho)
 	return true
 
@@ -90,6 +95,10 @@ func _ler_meta(l: String) -> void:
 			meta["escuro"] = float(partes[1]) if partes.size() > 1 else 0.85
 		"altar":
 			meta["altar_" + partes[1]] = Array(partes.slice(2))
+		"bilhete", "fala":
+			if not meta.has(partes[0]):
+				meta[partes[0]] = []
+			meta[partes[0]].append(resto)
 		_:
 			meta[partes[0]] = resto
 
@@ -117,6 +126,20 @@ func _criar_colisao(letra: String) -> void:
 			forma.position = Vector2((x0 + x) * TILE * 0.5, (y + 0.5) * TILE)
 			forma.disabled = not grupos_ativos[letra]
 			corpo.add_child(forma)
+
+
+## Liga cada "?"/"!" do mapa ao texto correspondente do cabeçalho, da esquerda para a direita.
+func _ligar_textos(simbolo: String, chave: String, destino: Array[Dictionary]) -> void:
+	var celulas: Array[Vector2i] = []
+	for y in altura:
+		for x in largura:
+			if grade[y][x] == simbolo:
+				celulas.append(Vector2i(x, y))
+	celulas.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return a.x < b.x or (a.x == b.x and a.y < b.y))
+	var textos: Array = meta.get(chave, [])
+	for i in celulas.size():
+		var texto: String = textos[i] if i < textos.size() else "(texto ainda não escrito)"
+		destino.append({"celula": celulas[i], "texto": texto})
 
 
 ## Mãos da parede ("M"): plataformas de mão única, uma por célula.
@@ -225,6 +248,16 @@ func _draw() -> void:
 					draw_line(p - Vector2(9, 26), p - Vector2(-9, 26), COR_PEDRA, 3)
 				"G":
 					draw_rect(r.grow(-4), Color(1, 1, 1, 0.6))
+				"?":
+					# Bilhete de graça preso na parede.
+					var b := Rect2(r.position + Vector2(10, 4), Vector2(20, 24))
+					draw_rect(b, Color(0.97, 0.95, 0.88))
+					for i in 3:
+						draw_line(b.position + Vector2(3, 6 + i * 6), b.position + Vector2(17, 6 + i * 6), COR_PORTAO, 1)
+				"!":
+					# NPC sentada (benzedeira): corpo escuro, lenço claro.
+					draw_rect(Rect2(r.position + Vector2(8, 14), Vector2(24, 26)), COR_PEDRA)
+					draw_rect(Rect2(r.position + Vector2(11, 4), Vector2(18, 12)), Color(0.97, 0.95, 0.88))
 				"K":
 					# A trança-corda: escura, trançada (cabelo, não cera).
 					if grupos_ativos["K"]:

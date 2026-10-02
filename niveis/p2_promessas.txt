@@ -3,7 +3,6 @@
 @escuro 0.8
 @altar 1 joelhos:D sem_luz:H
 @altar 2 carregar:B nao_correr
-@altar 3
 @altar 4 nao_correr
 ;; Pergunta: prometer gera tensão? As pessoas aceitam promessas ou procuram outro caminho?
 ;; Sala 1: portão (joelhos), caminho de cera oculto (sem luz) ou túnel longo de joelhos (sem promessa).

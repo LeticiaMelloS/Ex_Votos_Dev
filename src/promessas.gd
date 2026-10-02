@@ -40,6 +40,14 @@ const CATALOGO := {
 		"voto_txt": "levar a vela até a moldura dourada sem cair de muito alto (sem correr, sem se agarrar)",
 		"prazo_salas": 4,
 	},
+	"vela_dentro": {
+		"texto": "Se eu passar, acendo uma vela no altar de dentro.",
+		"graca": {"tipo": "abrir", "grupo": "F"},
+		"graca_txt": "a grade se abre",
+		"voto": {"tipo": "chegar"},
+		"voto_txt": "chegar até a vela do altar de dentro (moldura dourada)",
+		"prazo_salas": 2,
+	},
 	"nao_correr": {
 		"texto": "Não corro até o fim da ladeira.",
 		"graca": {"tipo": "salto_forte", "usos": 1},
@@ -202,7 +210,7 @@ func _checar(p: Dictionary) -> void:
 			if _passadas(p) >= v["salas"] * fator:
 				_cumprir(p)
 				return
-		"carregar":
+		"carregar", "chegar":
 			if nivel.celula(jogadora.centro()) == "T":
 				_cumprir(p)
 				return
