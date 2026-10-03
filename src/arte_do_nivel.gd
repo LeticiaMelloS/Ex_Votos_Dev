@@ -22,7 +22,7 @@ func montar(nivel: Nivel, camada_brilho: CanvasLayer) -> int:
 		var p := _ler_parametros(linha)
 		var caminho: String = p.get("arquivo", "")
 		if caminho == "" or not ResourceLoader.exists(caminho):
-			push_warning("Arte ainda não encontrada (ignorada): " + caminho)
+			print_verbose("Arte ainda não encontrada (ignorada): " + caminho)
 			continue
 		var tex: Texture2D = load(caminho)
 		var sprite := Sprite2D.new()

@@ -115,7 +115,7 @@ func carregar_nivel(i: int) -> void:
 	if arte.montar(nivel, brilho) > 0:
 		nivel.modo_greybox = 1
 
-	hud.definir_titulo("%s   ·   F1–F4 fases · R reinicia · Tab debug · F9 greybox/arte · F12 captura" % nivel.meta.get("nome", "Protótipo"))
+	hud.definir_titulo("%s   ·   F1–F4 fases · R reinicia · Tab debug · F9 greybox/arte · F11 moldes · F12 captura" % nivel.meta.get("nome", "Protótipo"))
 	if nivel.meta.has("dica"):
 		hud.mostrar_mensagem(nivel.meta["dica"], 6.0)
 
@@ -215,6 +215,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 			KEY_F12:
 				_capturar_tela()
+				return
+			KEY_F11:
+				if nivel:
+					var salvos := nivel.exportar_moldes(ProjectSettings.globalize_path("res://capturas/moldes"))
+					hud.mostrar_mensagem("%d moldes salvos em capturas/moldes" % salvos.size(), 3.0)
 				return
 			KEY_F9:
 				if nivel:

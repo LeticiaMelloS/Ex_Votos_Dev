@@ -15,6 +15,8 @@ A protagonista tem ~1,75 tile de altura. Ela pula ~2,4 tiles e, agarrando a bord
 | `@sem_trancas` | A protagonista começa sem as tranças |
 | `@fim Texto` | Mensagem ao chegar no `G` |
 | `@bilhete Texto` / `@fala Texto` | Textos dos `?` e `!` (uma linha cada) |
+| `@espaco nome x0 y0 x1 y1` | Retângulo (em tiles) de um espaço; **F11** exporta o molde dele em `capturas/moldes/` |
+| `@criatura arquivo=… altura=… recorte=papel` | Imagem da criatura da dívida (altura em tiles) |
 | `@arte arquivo=… x=… y=… altura=… parallax=… recorte=papel brilho=sim z=…` | Coloca um PNG por cima do greybox (ver abaixo) |
 | `;; texto` | Comentário (ignorado) |
 

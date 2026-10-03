@@ -100,7 +100,7 @@ func _ler_meta(l: String) -> void:
 			meta["escuro"] = float(partes[1]) if partes.size() > 1 else 0.85
 		"altar":
 			meta["altar_" + partes[1]] = Array(partes.slice(2))
-		"bilhete", "fala", "arte":
+		"bilhete", "fala", "arte", "espaco":
 			if not meta.has(partes[0]):
 				meta[partes[0]] = []
 			meta[partes[0]].append(resto)
@@ -330,3 +330,55 @@ func _desenhar_mao(r: Rect2, aberta: bool) -> void:
 		brilho.draw_rect(Rect2(c.x - 6, c.y - 8, 12, 14), Color(COR_CERA, 0.55))
 		for i in 3:
 			brilho.draw_rect(Rect2(c.x - 6 + i * 4.5, c.y - 14, 3, 7), Color(COR_CERA, 0.55))
+
+
+## Exporta um "molde" de cada espaço declarado com "@espaco nome x0 y0 x1 y1"
+## (em tiles), na escala do jogo (1 tile = 40 px). É a base para gerar a arte
+## por cima: a imagem gerada no mesmo tamanho encaixa exatamente no mapa.
+func exportar_moldes(pasta: String) -> Array[String]:
+	DirAccess.make_dir_recursive_absolute(pasta)
+	var salvos: Array[String] = []
+	for linha in meta.get("espaco", []):
+		var p: PackedStringArray = String(linha).split(" ", false)
+		if p.size() < 5:
+			continue
+		var r := Rect2i(int(p[1]), int(p[2]), int(p[3]) - int(p[1]), int(p[4]) - int(p[2]))
+		var img := Image.create(r.size.x * TILE, r.size.y * TILE, false, Image.FORMAT_RGBA8)
+		img.fill(COR_PAPEL)
+		for y in range(r.position.y, r.end.y):
+			for x in range(r.position.x, r.end.x):
+				if x < 0 or y < 0 or x >= largura or y >= altura:
+					continue
+				var cor := _cor_do_molde(grade[y][x])
+				if cor.a > 0.0:
+					img.fill_rect(Rect2i((x - r.position.x) * TILE, (y - r.position.y) * TILE, TILE, TILE), cor)
+		# Grade fina a cada tile e mais forte a cada 5, para conferir alinhamento.
+		for gx in range(0, r.size.x + 1):
+			var cor_linha := Color(0, 0, 0, 0.25 if gx % 5 == 0 else 0.08)
+			img.fill_rect(Rect2i(mini(gx * TILE, img.get_width() - 1), 0, 1, img.get_height()), cor_linha)
+		for gy in range(0, r.size.y + 1):
+			var cor_linha := Color(0, 0, 0, 0.25 if gy % 5 == 0 else 0.08)
+			img.fill_rect(Rect2i(0, mini(gy * TILE, img.get_height() - 1), img.get_width(), 1), cor_linha)
+		var nome := "%s/%s__x%d_y%d_%dx%d.png" % [pasta, p[0], r.position.x, r.position.y, r.size.x, r.size.y]
+		img.save_png(nome)
+		salvos.append(nome)
+	return salvos
+
+
+func _cor_do_molde(c: String) -> Color:
+	match c:
+		"#":
+			return COR_PEDRA
+		"~":
+			return COR_VAZIO
+		"D", "F":
+			return COR_PORTAO
+		"B", "H", "M", "K":
+			return Color(COR_CERA, 0.7)
+		"T", "1", "2", "3", "4", "5", "6", "7", "8", "9", "t", "m":
+			return COR_OURO
+		"?":
+			return Color(1, 1, 1)
+		"!":
+			return Color(0.4, 0.3, 0.5)
+	return Color(0, 0, 0, 0)

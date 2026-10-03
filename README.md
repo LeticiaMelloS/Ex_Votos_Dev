@@ -26,6 +26,7 @@ Se o Godot avisar que o projeto é de uma versão anterior, aceite a conversão.
 | Trocar de fase | F1 / F2 / F3 / F4 | — |
 | Capturar a tela sem textos (para desenhar por cima) | F12 → salva em `capturas/` | — |
 | Alternar greybox / arte | F9 | — |
+| Exportar moldes dos espaços (base para gerar arte) | F11 → salva em `capturas/moldes/` | — |
 | Debug (FPS, promessas, zonas) | Tab | — |
 
 **Agarrar bordas:** no ar, perto de uma borda, segure a direção dela. Para subir, aperte pular.
