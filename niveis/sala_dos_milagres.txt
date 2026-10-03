@@ -7,46 +7,6 @@
 @altar 2 joelhos:D sem_luz:H
 @fim A parede inteira era uma mão. E ela está fechando os dedos.          — EX-VOTO —          (R reinicia)
 @fala Aqui ninguém entra de mão vazia.
-;; ESPAÇOS: retângulos (em tiles) usados para exportar os moldes (F11 no jogo).
-;; Formato: @espaco nome x0 y0 x1 y1
-@espaco e1_a-porta 0 6 42 56
-@espaco e2_corredor 40 30 80 56
-@espaco e3_primeiro-altar 66 18 100 44
-@espaco e4_sala-das-velas 98 18 130 44
-@espaco e5_escadaria 126 14 156 44
-@espaco e6_parede-de-maos 150 4 180 56
-@espaco e7_revelacao 176 0 200 14
-
-;; ARTE. Basta salvar o PNG com o nome indicado em arte/provisoria/ para ele aparecer no jogo.
-;; plano = camada 2 (onde se pisa), fundo = camada 1, distante = camada 0. Ver Game Design/arte/passo-a-passo-arte-com-ia.md
-@arte arquivo=res://arte/provisoria/ia_e1_distante.png x=-10 y=1 altura=60 parallax=0.35 z=-25
-@arte arquivo=res://arte/provisoria/ia_e1_fundo.png x=0 y=6 altura=50 z=-15
-@arte arquivo=res://arte/provisoria/ia_e1_plano.png x=0 y=6 altura=50 z=-5
-@arte arquivo=res://arte/provisoria/ia_e2_distante.png x=30 y=25 altura=36 parallax=0.35 z=-25
-@arte arquivo=res://arte/provisoria/ia_e2_fundo.png x=40 y=30 altura=26 z=-15
-@arte arquivo=res://arte/provisoria/ia_e2_plano.png x=40 y=30 altura=26 z=-5
-@arte arquivo=res://arte/provisoria/ia_e3_distante.png x=56 y=13 altura=36 parallax=0.35 z=-25
-@arte arquivo=res://arte/provisoria/ia_e3_fundo.png x=66 y=18 altura=26 z=-15
-@arte arquivo=res://arte/provisoria/ia_e3_plano.png x=66 y=18 altura=26 z=-5
-@arte arquivo=res://arte/provisoria/ia_e4_distante.png x=88 y=13 altura=36 parallax=0.35 z=-25
-@arte arquivo=res://arte/provisoria/ia_e4_fundo.png x=98 y=18 altura=26 z=-15
-@arte arquivo=res://arte/provisoria/ia_e4_plano.png x=98 y=18 altura=26 z=-5
-@arte arquivo=res://arte/provisoria/ia_e5_distante.png x=116 y=9 altura=40 parallax=0.35 z=-25
-@arte arquivo=res://arte/provisoria/ia_e5_fundo.png x=126 y=14 altura=30 z=-15
-@arte arquivo=res://arte/provisoria/ia_e5_plano.png x=126 y=14 altura=30 z=-5
-@arte arquivo=res://arte/provisoria/ia_e6_distante.png x=140 y=-1 altura=62 parallax=0.35 z=-25
-@arte arquivo=res://arte/provisoria/ia_e6_fundo.png x=150 y=4 altura=52 z=-15
-@arte arquivo=res://arte/provisoria/ia_e6_plano.png x=150 y=4 altura=52 z=-5
-@arte arquivo=res://arte/provisoria/ia_e7_distante.png x=166 y=-5 altura=24 parallax=0.35 z=-25
-@arte arquivo=res://arte/provisoria/ia_e7_fundo.png x=176 y=0 altura=14 z=-15
-@arte arquivo=res://arte/provisoria/ia_e7_plano.png x=176 y=0 altura=14 z=-5
-;; Objetos (o processar_arte.bat já tira o fundo claro)
-@arte arquivo=res://arte/provisoria/ia_benzedeira.png x=15 y=48 altura=4 z=-1
-@arte arquivo=res://arte/provisoria/ia_vela_grande.png x=105 y=35 altura=5 z=-1
-@arte arquivo=res://arte/provisoria/ia_altar_promessa.png x=111 y=35 altura=5 z=-1
-@arte arquivo=res://arte/provisoria/ia_altar_mao.png x=161 y=39 altura=5 z=-1
-@criatura arquivo=res://arte/provisoria/ia_criatura_cera.png altura=3
-
 ;; Bilhetes, da esquerda para a direita (textos de Game Design/design/bilhetes-de-graca.md)
 @bilhete Meu filho caiu do cavalo e ficou três dias sem acordar. Prometi trazer a cabeça dele em cera se ele abrisse os olhos. Abriu. Está aqui. Obrigada. — Mãe de um menino de Mariana
 @bilhete Andei de muleta onze anos. Deixo ela aqui porque não preciso mais. — J.

@@ -13,9 +13,6 @@ var promessa_id := ""
 ## true enquanto a jogadora tenta pagar a dívida atrasada.
 var quitando := false
 var velocidade := 115.0
-## Arte opcional (linha "@criatura" do mapa). Sem ela, usa o desenho provisório.
-var textura: Texture2D
-var altura_px := 120.0
 
 var _espera := 1.8  # tempo "nascendo" antes de começar a perseguir
 var _t := 0.0
@@ -60,9 +57,6 @@ func dissolver() -> void:
 
 
 func _draw() -> void:
-	if textura:
-		_desenhar_textura()
-		return
 	var cor := Nivel.COR_CERA
 	if quitando:
 		cor = cor.lerp(Color(1, 1, 1), 0.4)
@@ -78,17 +72,3 @@ func _draw() -> void:
 	var escuro := Color(0.12, 0.09, 0.06)
 	draw_circle(Vector2(-7, -4) * nascendo, 4.0 * nascendo, escuro)
 	draw_circle(Vector2(7, -4) * nascendo, 4.0 * nascendo, escuro)
-
-
-func _desenhar_textura() -> void:
-	var nascendo := clampf(1.0 - _espera / 1.8, 0.2, 1.0) if not _dissolvendo else 1.0
-	var escala := altura_px / textura.get_height() * nascendo
-	var tam := Vector2(textura.get_width(), textura.get_height()) * escala
-	# Olha para a protagonista e "respira" um pouco.
-	var olhando_esq := alvo != null and alvo.global_position.x < global_position.x
-	tam.y *= 1.0 + sin(_t * 3.0) * 0.03
-	var rect := Rect2(Vector2(-tam.x * 0.5, -tam.y * 0.6), tam)
-	if olhando_esq:
-		draw_set_transform(Vector2.ZERO, 0.0, Vector2(-1, 1))
-	draw_texture_rect(textura, rect, false, Color(1, 1, 1, 0.95 if quitando else 1.0))
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

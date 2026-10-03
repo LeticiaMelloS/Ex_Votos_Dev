@@ -25,8 +25,6 @@ Se o Godot avisar que o projeto é de uma versão anterior, aceite a conversão.
 | Reiniciar fase | R | Back |
 | Trocar de fase | F1 / F2 / F3 / F4 | — |
 | Capturar a tela sem textos (para desenhar por cima) | F12 → salva em `capturas/` | — |
-| Alternar greybox / arte | F9 | — |
-| Exportar moldes dos espaços (base para gerar arte) | F11 → salva em `capturas/moldes/` | — |
 | Debug (FPS, promessas, zonas) | Tab | — |
 
 **Agarrar bordas:** no ar, perto de uma borda, segure a direção dela. Para subir, aperte pular.
@@ -60,11 +58,6 @@ src/oferendas.gd     ofertas do corpo (tranças, mão)
 src/nivel.gd         lê os mapas de texto e cria as colisões
 src/hud.gd           textos provisórios
 niveis/              mapas das fases (veja niveis/LEIA-ME.md)
-src/arte_do_nivel.gd coloca os PNGs das linhas @arte, com parallax
-arte/entrada/        o que você exporta do Krita (ia_eN_gerada.png, objetos…)
-arte/provisoria/     o que o jogo usa (gerado pelo processar_arte.bat)
-arte-fonte/          arquivos .kra do Krita
-processar_arte.bat   transforma arte/entrada em arte/provisoria (duplo clique)
 ```
 
 ## Ajustar a sensação do movimento

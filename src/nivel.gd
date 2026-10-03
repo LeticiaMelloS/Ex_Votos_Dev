@@ -28,11 +28,6 @@ var bilhetes: Array[Dictionary] = []  # {"celula": Vector2i, "texto": String}
 var falas: Array[Dictionary] = []
 var oferendas: Array[String] = []  # altares de oferta já usados
 var ex_votos: Array[Vector2] = []  # marcas de promessas cumpridas
-## 0 = só greybox · 1 = arte com greybox translúcido por cima · 2 = só arte (colisão invisível).
-var modo_greybox := 0:
-	set(v):
-		modo_greybox = v
-		queue_redraw()
 var mostrar_debug := false:
 	set(v):
 		mostrar_debug = v
@@ -40,11 +35,6 @@ var mostrar_debug := false:
 
 ## Elementos de cera e ouro. Ficam numa camada acima da escuridão (ver main.gd).
 var brilho := Node2D.new()
-
-## Retângulos (px) cobertos por arte de plano de jogo: ali o greybox fica translúcido.
-var areas_com_arte: Array[Rect2] = []
-## Papel de fundo, sempre atrás de tudo (inclusive da arte).
-var _papel := Node2D.new()
 
 var _corpos := {}  # letra -> StaticBody2D
 var _maos := {}  # Vector2i -> CollisionShape2D (mãos da parede, uma por célula)
@@ -87,9 +77,6 @@ func carregar(caminho: String) -> bool:
 	for letra in GRUPOS_SOLIDOS:
 		_criar_colisao(letra)
 	_criar_maos()
-	_papel.z_index = -100
-	_papel.draw.connect(func(): _papel.draw_rect(Rect2(Vector2.ZERO, tamanho_px()), COR_PAPEL))
-	add_child(_papel)
 	_ligar_textos("?", "bilhete", bilhetes)
 	_ligar_textos("!", "fala", falas)
 	brilho.draw.connect(_desenhar_brilho)
@@ -108,7 +95,7 @@ func _ler_meta(l: String) -> void:
 			meta["escuro"] = float(partes[1]) if partes.size() > 1 else 0.85
 		"altar":
 			meta["altar_" + partes[1]] = Array(partes.slice(2))
-		"bilhete", "fala", "arte", "espaco":
+		"bilhete", "fala":
 			if not meta.has(partes[0]):
 				meta[partes[0]] = []
 			meta[partes[0]].append(resto)
@@ -237,26 +224,21 @@ func adicionar_ex_voto(pos: Vector2) -> void:
 
 
 func _draw() -> void:
-	var alfa_com_arte := 1.0 if modo_greybox == 0 else (0.35 if modo_greybox == 1 else 0.0)
+	draw_rect(Rect2(Vector2.ZERO, tamanho_px()), COR_PAPEL)
 	for y in altura:
 		for x in largura:
 			var c := grade[y][x]
 			var r := Rect2(x * TILE, y * TILE, TILE, TILE)
-			var alfa_pedra := 1.0
-			if alfa_com_arte < 1.0 and _tem_arte(r):
-				alfa_pedra = alfa_com_arte
 			match c:
 				"#":
-					if alfa_pedra > 0.0:
-						draw_rect(r, Color(COR_PEDRA, alfa_pedra))
+					draw_rect(r, COR_PEDRA)
 				"D", "F":
 					if grupos_ativos[c]:
 						draw_rect(r, COR_PORTAO)
 						for i in 3:
 							draw_line(r.position + Vector2(8 + i * 12, 0), r.position + Vector2(8 + i * 12, TILE), COR_PEDRA, 3)
 				"~":
-					if alfa_pedra > 0.0:
-						draw_rect(r, Color(COR_VAZIO, alfa_pedra))
+					draw_rect(r, COR_VAZIO)
 				"e", "E":
 					# Degraus da escadaria (só marca visual; o chão real são os "#").
 					draw_line(r.position + Vector2(0, TILE - 2), r.end - Vector2(0, 2), COR_PORTAO, 2)
@@ -339,104 +321,3 @@ func _desenhar_mao(r: Rect2, aberta: bool) -> void:
 		brilho.draw_rect(Rect2(c.x - 6, c.y - 8, 12, 14), Color(COR_CERA, 0.55))
 		for i in 3:
 			brilho.draw_rect(Rect2(c.x - 6 + i * 4.5, c.y - 14, 3, 7), Color(COR_CERA, 0.55))
-
-
-func _tem_arte(r: Rect2) -> bool:
-	for a in areas_com_arte:
-		if a.encloses(r):
-			return true
-	return false
-
-
-## Exporta um "molde" de cada espaço declarado com "@espaco nome x0 y0 x1 y1"
-## (em tiles), na escala do jogo (1 tile = 40 px). É a base para gerar a arte
-## por cima: a imagem gerada no mesmo tamanho encaixa exatamente no mapa.
-func exportar_moldes(pasta: String) -> Array[String]:
-	DirAccess.make_dir_recursive_absolute(pasta)
-	var salvos: Array[String] = []
-	for linha in meta.get("espaco", []):
-		var p: PackedStringArray = String(linha).split(" ", false)
-		if p.size() < 5:
-			continue
-		var r := Rect2i(int(p[1]), int(p[2]), int(p[3]) - int(p[1]), int(p[4]) - int(p[2]))
-		var img := Image.create(r.size.x * TILE, r.size.y * TILE, false, Image.FORMAT_RGBA8)
-		img.fill(COR_PAPEL)
-		for y in range(r.position.y, r.end.y):
-			for x in range(r.position.x, r.end.x):
-				if x < 0 or y < 0 or x >= largura or y >= altura:
-					continue
-				var cor := _cor_do_molde(grade[y][x])
-				if cor.a > 0.0:
-					img.fill_rect(Rect2i((x - r.position.x) * TILE, (y - r.position.y) * TILE, TILE, TILE), cor)
-		# Grade fina a cada tile e mais forte a cada 5, para conferir alinhamento.
-		for gx in range(0, r.size.x + 1):
-			var cor_linha := Color(0, 0, 0, 0.25 if gx % 5 == 0 else 0.08)
-			img.fill_rect(Rect2i(mini(gx * TILE, img.get_width() - 1), 0, 1, img.get_height()), cor_linha)
-		for gy in range(0, r.size.y + 1):
-			var cor_linha := Color(0, 0, 0, 0.25 if gy % 5 == 0 else 0.08)
-			img.fill_rect(Rect2i(0, mini(gy * TILE, img.get_height() - 1), img.get_width(), 1), cor_linha)
-		var nome := "%s/%s__x%d_y%d_%dx%d.png" % [pasta, p[0], r.position.x, r.position.y, r.size.x, r.size.y]
-		img.save_png(nome)
-		salvos.append(nome)
-		# Versão de controle para a IA: só estrutura, preto no branco, sem grade.
-		var ctrl := Image.create(r.size.x * TILE, r.size.y * TILE, false, Image.FORMAT_RGB8)
-		ctrl.fill(Color.WHITE)
-		for y in range(r.position.y, r.end.y):
-			for x in range(r.position.x, r.end.x):
-				if x >= 0 and y >= 0 and x < largura and y < altura and "#~DF".contains(grade[y][x]):
-					ctrl.fill_rect(Rect2i((x - r.position.x) * TILE, (y - r.position.y) * TILE, TILE, TILE), Color.BLACK)
-		DirAccess.make_dir_recursive_absolute(pasta + "/controle")
-		ctrl.save_png("%s/controle/%s__controle.png" % [pasta, p[0]])
-		_exportar_base_e_profundidade(pasta, p[0], r)
-	return salvos
-
-
-func _cor_do_molde(c: String) -> Color:
-	match c:
-		"#":
-			return COR_PEDRA
-		"~":
-			return COR_VAZIO
-		"D", "F":
-			return COR_PORTAO
-		"B", "H", "M", "K":
-			return Color(COR_CERA, 0.7)
-		"T", "1", "2", "3", "4", "5", "6", "7", "8", "9", "t", "m":
-			return COR_OURO
-		"?":
-			return Color(1, 1, 1)
-		"!":
-			return Color(0.4, 0.3, 0.5)
-	return Color(0, 0, 0, 0)
-
-
-## Duas imagens extras para guiar a IA:
-## - base: sólidos quase pretos, vazio em cinza médio com textura (ponto de partida do Refine);
-## - profundidade: sólidos brancos (perto), vazio preto (longe), para o controle "Depth".
-func _exportar_base_e_profundidade(pasta: String, nome: String, r: Rect2i) -> void:
-	var w := r.size.x * TILE
-	var h := r.size.y * TILE
-	var base := Image.create(w, h, false, Image.FORMAT_RGB8)
-	var prof := Image.create(w, h, false, Image.FORMAT_RGB8)
-	prof.fill(Color.BLACK)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = hash(nome)
-	const BLOCO := 8
-	for by in range(0, h, BLOCO):
-		for bx in range(0, w, BLOCO):
-			var tx := r.position.x + bx / TILE
-			var ty := r.position.y + by / TILE
-			var solido := tx >= 0 and ty >= 0 and tx < largura and ty < altura and "#~DF".contains(grade[ty][tx])
-			var v: float
-			if solido:
-				v = 0.08 + rng.randf() * 0.06
-			else:
-				# Mais escuro perto do chão e do teto, mais claro no meio: sugere volume.
-				v = 0.42 + rng.randf() * 0.16 + sin(float(by) / h * PI) * 0.08
-			base.fill_rect(Rect2i(bx, by, BLOCO, BLOCO), Color(v, v * 0.95, v * 0.88))
-			if solido:
-				prof.fill_rect(Rect2i(bx, by, BLOCO, BLOCO), Color.WHITE)
-	DirAccess.make_dir_recursive_absolute(pasta + "/base")
-	DirAccess.make_dir_recursive_absolute(pasta + "/profundidade")
-	base.save_png("%s/base/%s__base.png" % [pasta, nome])
-	prof.save_png("%s/profundidade/%s__profundidade.png" % [pasta, nome])

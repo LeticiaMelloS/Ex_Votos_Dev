@@ -256,7 +256,6 @@ func _falhar(p: Dictionary, motivo: String) -> void:
 	c.promessa_id = p["id"]
 	c.origem = nivel.pe_da_celula(nivel.altares[p["altar"]]) - Vector2(0, 40)
 	c.pegou.connect(ao_ser_pega)
-	_aplicar_arte_da_criatura(c)
 	camada_criaturas.add_child(c)
 	criaturas.append(c)
 	mensagem.emit(motivo + " A promessa não foi paga. Algo nasce da cera.")
@@ -282,23 +281,3 @@ func resumo_debug() -> String:
 	for p in abertas:
 		linhas.append("  • %s (%d salas desde a promessa)%s" % [p["id"], _passadas(p), "  [dívida]" if p["divida"] != null else ""])
 	return "\n".join(linhas)
-
-
-## Linha opcional no mapa: "@criatura arquivo=res://... altura=3 recorte=papel" (altura em tiles).
-func _aplicar_arte_da_criatura(c: Criatura) -> void:
-	if not nivel.meta.has("criatura"):
-		return
-	var p := {}
-	for parte in String(nivel.meta["criatura"]).split(" ", false):
-		var kv := parte.split("=", true, 1)
-		if kv.size() == 2:
-			p[kv[0]] = kv[1]
-	var caminho: String = p.get("arquivo", "")
-	if caminho == "" or not ResourceLoader.exists(caminho):
-		return
-	c.textura = load(caminho)
-	c.altura_px = float(p.get("altura", "3")) * Nivel.TILE
-	if p.get("recorte", "") == "papel":
-		var mat := ShaderMaterial.new()
-		mat.shader = preload("res://src/recorte_papel.gdshader")
-		c.material = mat

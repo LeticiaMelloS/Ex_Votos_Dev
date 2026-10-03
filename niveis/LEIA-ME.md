@@ -15,9 +15,6 @@ A protagonista tem ~1,75 tile de altura. Ela pula ~2,4 tiles e, agarrando a bord
 | `@sem_trancas` | A protagonista começa sem as tranças |
 | `@fim Texto` | Mensagem ao chegar no `G` |
 | `@bilhete Texto` / `@fala Texto` | Textos dos `?` e `!` (uma linha cada) |
-| `@espaco nome x0 y0 x1 y1` | Retângulo (em tiles) de um espaço; **F11** exporta o molde dele em `capturas/moldes/` |
-| `@criatura arquivo=… altura=… recorte=papel` | Imagem da criatura da dívida (altura em tiles) |
-| `@arte arquivo=… x=… y=… altura=… parallax=… recorte=papel brilho=sim z=…` | Coloca um PNG por cima do greybox (ver abaixo) |
 | `;; texto` | Comentário (ignorado) |
 
 Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_correr`, `vela_dentro`. A definição de cada uma fica em `src/promessas.gd`.
@@ -49,23 +46,3 @@ Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_correr`, `vela_de
 | `!` | NPC que fala sozinha ao se aproximar. Textos nas linhas `@fala`, na mesma ordem |
 
 Com **Tab** ligado, as zonas `r` e `z` aparecem coloridas.
-
-## Arte por cima do greybox (`@arte`)
-
-```
-@arte arquivo=res://arte/provisoria/ia_fundo_sala-velas_camada0.png x=94 y=16 altura=25 parallax=0.3 z=-20
-```
-
-| Parâmetro | O que faz |
-|---|---|
-| `arquivo` | Caminho do PNG dentro do projeto (`res://…`) |
-| `x`, `y` | Canto superior esquerdo, em tiles (Tab mostra a grade) |
-| `altura` | Altura em tiles; a largura segue a proporção da imagem |
-| `parallax` | `1` acompanha o chão; `0.3` é bem longe (fundo distante); `0.6`, fundo médio; acima de `1`, primeiro plano |
-| `recorte=papel` | Deixa transparente o fundo claro (para objetos gerados sobre fundo liso) |
-| `brilho=sim` | Fica acima da escuridão (para peças de cera e ouro) |
-| `z` | Ordem: mais negativo fica mais atrás. Padrão `-10` |
-
-- Se o arquivo ainda não existir, a linha é ignorada. Dá para deixar preparado.
-- Com arte na fase, o greybox fica translúcido. **F9** alterna: só greybox → arte + greybox → só arte.
-- Com o Godot aberto, arquivos novos são importados quando você volta para a janela do editor. Depois, **R** recarrega a fase.
