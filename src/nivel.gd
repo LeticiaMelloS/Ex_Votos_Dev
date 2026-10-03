@@ -371,6 +371,7 @@ func exportar_moldes(pasta: String) -> Array[String]:
 					ctrl.fill_rect(Rect2i((x - r.position.x) * TILE, (y - r.position.y) * TILE, TILE, TILE), Color.BLACK)
 		DirAccess.make_dir_recursive_absolute(pasta + "/controle")
 		ctrl.save_png("%s/controle/%s__controle.png" % [pasta, p[0]])
+		_exportar_base_e_profundidade(pasta, p[0], r)
 	return salvos
 
 
@@ -391,3 +392,35 @@ func _cor_do_molde(c: String) -> Color:
 		"!":
 			return Color(0.4, 0.3, 0.5)
 	return Color(0, 0, 0, 0)
+
+
+## Duas imagens extras para guiar a IA:
+## - base: sólidos quase pretos, vazio em cinza médio com textura (ponto de partida do Refine);
+## - profundidade: sólidos brancos (perto), vazio preto (longe), para o controle "Depth".
+func _exportar_base_e_profundidade(pasta: String, nome: String, r: Rect2i) -> void:
+	var w := r.size.x * TILE
+	var h := r.size.y * TILE
+	var base := Image.create(w, h, false, Image.FORMAT_RGB8)
+	var prof := Image.create(w, h, false, Image.FORMAT_RGB8)
+	prof.fill(Color.BLACK)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash(nome)
+	const BLOCO := 8
+	for by in range(0, h, BLOCO):
+		for bx in range(0, w, BLOCO):
+			var tx := r.position.x + bx / TILE
+			var ty := r.position.y + by / TILE
+			var solido := tx >= 0 and ty >= 0 and tx < largura and ty < altura and "#~DF".contains(grade[ty][tx])
+			var v: float
+			if solido:
+				v = 0.08 + rng.randf() * 0.06
+			else:
+				# Mais escuro perto do chão e do teto, mais claro no meio: sugere volume.
+				v = 0.42 + rng.randf() * 0.16 + sin(float(by) / h * PI) * 0.08
+			base.fill_rect(Rect2i(bx, by, BLOCO, BLOCO), Color(v, v * 0.95, v * 0.88))
+			if solido:
+				prof.fill_rect(Rect2i(bx, by, BLOCO, BLOCO), Color.WHITE)
+	DirAccess.make_dir_recursive_absolute(pasta + "/base")
+	DirAccess.make_dir_recursive_absolute(pasta + "/profundidade")
+	base.save_png("%s/base/%s__base.png" % [pasta, nome])
+	prof.save_png("%s/profundidade/%s__profundidade.png" % [pasta, nome])
