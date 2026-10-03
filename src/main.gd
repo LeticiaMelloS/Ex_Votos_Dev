@@ -113,7 +113,7 @@ func carregar_nivel(i: int) -> void:
 	arte.camera = camera
 	add_child(arte)
 	if arte.montar(nivel, brilho) > 0:
-		nivel.modo_greybox = 1
+		nivel.modo_greybox = 2
 
 	hud.definir_titulo("%s   ·   F1–F4 fases · R reinicia · Tab debug · F9 greybox/arte · F11 moldes · F12 captura" % nivel.meta.get("nome", "Protótipo"))
 	if nivel.meta.has("dica"):
@@ -224,6 +224,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_F9:
 				if nivel:
 					nivel.modo_greybox = (nivel.modo_greybox + 1) % 3
+					arte.visible = nivel.modo_greybox != 0
 					hud.mostrar_mensagem(["Só greybox", "Arte + greybox translúcido", "Só arte"][nivel.modo_greybox], 1.5)
 				return
 	if _menu_altar != "":

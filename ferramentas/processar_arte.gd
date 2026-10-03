@@ -36,13 +36,17 @@ func _initialize() -> void:
 		if not arquivo.to_lower().ends_with(".png"):
 			continue
 		var nome := arquivo.get_basename()
+		if nome.to_lower().ends_with(".png"):
+			# "ia_e4_gerada.png.png": o Krita acrescentou .png a um nome que já tinha.
+			relatorio.append("  aviso: %s tem .png duas vezes no nome; entendi como %s" % [arquivo, nome])
+			nome = nome.get_basename()
 		var partes := nome.split("_")
 		if partes.size() == 3 and partes[0] == "ia" and espacos.has(partes[1]) and partes[2] == "gerada":
 			_processar_espaco(arquivo, partes[1], espacos[partes[1]], nivel)
 		elif partes.size() == 3 and partes[0] == "ia" and espacos.has(partes[1]) and partes[2] == "distante":
-			_processar_distante(arquivo)
+			_processar_distante(arquivo, nome + ".png")
 		elif nome.begins_with("ia_"):
-			_processar_objeto(arquivo)
+			_processar_objeto(arquivo, nome + ".png")
 		else:
 			relatorio.append("IGNORADO (o nome precisa começar com ia_): " + arquivo)
 	print("\n".join(relatorio))
@@ -98,8 +102,8 @@ func _processar_espaco(arquivo: String, chave: String, r: Rect2i, nivel: Nivel) 
 	relatorio.append("OK %s → %s + %s%s" % [arquivo, fundo_nome, plano_nome, _txt_vermelho(vermelhos)])
 
 
-func _processar_distante(arquivo: String) -> void:
-	if not _precisa(arquivo, [arquivo]):
+func _processar_distante(arquivo: String, nome_saida: String) -> void:
+	if not _precisa(arquivo, [nome_saida]):
 		relatorio.append("sem mudanças: " + arquivo)
 		return
 	var img := _carregar(arquivo)
@@ -108,12 +112,12 @@ func _processar_distante(arquivo: String) -> void:
 	var veu := Image.create(img.get_width(), img.get_height(), false, Image.FORMAT_RGBA8)
 	veu.fill(Color(Nivel.COR_PAPEL, 0.45))
 	img.blend_rect(veu, Rect2i(0, 0, img.get_width(), img.get_height()), Vector2i.ZERO)
-	img.save_png(saida + "/" + arquivo)
+	img.save_png(saida + "/" + nome_saida)
 	relatorio.append("OK %s → apagado para o fundo distante%s" % [arquivo, _txt_vermelho(vermelhos)])
 
 
-func _processar_objeto(arquivo: String) -> void:
-	if not _precisa(arquivo, [arquivo]):
+func _processar_objeto(arquivo: String, nome_saida: String) -> void:
+	if not _precisa(arquivo, [nome_saida]):
 		relatorio.append("sem mudanças: " + arquivo)
 		return
 	var img := _carregar(arquivo)
@@ -124,7 +128,7 @@ func _processar_objeto(arquivo: String) -> void:
 	var uso := img.get_used_rect()
 	if uso.size.x > 0 and uso.size.y > 0:
 		img = img.get_region(uso.grow(4).intersection(Rect2i(0, 0, img.get_width(), img.get_height())))
-	img.save_png(saida + "/" + arquivo)
+	img.save_png(saida + "/" + nome_saida)
 	relatorio.append("OK %s → objeto recortado (%dx%d)%s" % [arquivo, img.get_width(), img.get_height(), _txt_vermelho(vermelhos)])
 
 

@@ -41,6 +41,11 @@ var mostrar_debug := false:
 ## Elementos de cera e ouro. Ficam numa camada acima da escuridão (ver main.gd).
 var brilho := Node2D.new()
 
+## Retângulos (px) cobertos por arte de plano de jogo: ali o greybox fica translúcido.
+var areas_com_arte: Array[Rect2] = []
+## Papel de fundo, sempre atrás de tudo (inclusive da arte).
+var _papel := Node2D.new()
+
 var _corpos := {}  # letra -> StaticBody2D
 var _maos := {}  # Vector2i -> CollisionShape2D (mãos da parede, uma por célula)
 var _maos_ativas := {}  # Vector2i -> true
@@ -82,6 +87,9 @@ func carregar(caminho: String) -> bool:
 	for letra in GRUPOS_SOLIDOS:
 		_criar_colisao(letra)
 	_criar_maos()
+	_papel.z_index = -100
+	_papel.draw.connect(func(): _papel.draw_rect(Rect2(Vector2.ZERO, tamanho_px()), COR_PAPEL))
+	add_child(_papel)
 	_ligar_textos("?", "bilhete", bilhetes)
 	_ligar_textos("!", "fala", falas)
 	brilho.draw.connect(_desenhar_brilho)
@@ -229,13 +237,14 @@ func adicionar_ex_voto(pos: Vector2) -> void:
 
 
 func _draw() -> void:
-	if modo_greybox == 0:
-		draw_rect(Rect2(Vector2.ZERO, tamanho_px()), COR_PAPEL)
-	var alfa_pedra := 1.0 if modo_greybox == 0 else (0.35 if modo_greybox == 1 else 0.0)
+	var alfa_com_arte := 1.0 if modo_greybox == 0 else (0.35 if modo_greybox == 1 else 0.0)
 	for y in altura:
 		for x in largura:
 			var c := grade[y][x]
 			var r := Rect2(x * TILE, y * TILE, TILE, TILE)
+			var alfa_pedra := 1.0
+			if alfa_com_arte < 1.0 and _tem_arte(r):
+				alfa_pedra = alfa_com_arte
 			match c:
 				"#":
 					if alfa_pedra > 0.0:
@@ -330,6 +339,13 @@ func _desenhar_mao(r: Rect2, aberta: bool) -> void:
 		brilho.draw_rect(Rect2(c.x - 6, c.y - 8, 12, 14), Color(COR_CERA, 0.55))
 		for i in 3:
 			brilho.draw_rect(Rect2(c.x - 6 + i * 4.5, c.y - 14, 3, 7), Color(COR_CERA, 0.55))
+
+
+func _tem_arte(r: Rect2) -> bool:
+	for a in areas_com_arte:
+		if a.encloses(r):
+			return true
+	return false
 
 
 ## Exporta um "molde" de cada espaço declarado com "@espaco nome x0 y0 x1 y1"

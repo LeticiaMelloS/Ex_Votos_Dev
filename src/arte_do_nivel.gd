@@ -47,7 +47,12 @@ func montar(nivel: Nivel, camada_brilho: CanvasLayer) -> int:
 				# Referência: quando a câmera está no centro da imagem, ela aparece onde foi posta.
 				var centro := base + Vector2(tex.get_width(), tex.get_height()) * escala * 0.5
 				_camadas.append({"no": sprite, "base": base, "ref": centro, "parallax": parallax})
+		# Arte de plano de jogo ("..._plano.png"): o greybox fica translúcido só ali.
+		if caminho.ends_with("_plano.png"):
+			nivel.areas_com_arte.append(Rect2(base, Vector2(tex.get_width(), tex.get_height()) * escala))
 		total += 1
+	if not nivel.areas_com_arte.is_empty():
+		nivel.queue_redraw()
 	return total
 
 

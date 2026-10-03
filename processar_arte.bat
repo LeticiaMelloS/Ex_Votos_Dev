@@ -12,7 +12,8 @@ if not exist "%GODOT%" (
 )
 
 echo Processando a arte...
-"%GODOT%" --headless --path "%~dp0" -s res://ferramentas/processar_arte.gd 2>nul
+cd /d "%~dp0"
+"%GODOT%" --headless --path . -s res://ferramentas/processar_arte.gd 2>nul
 echo.
 echo Pronto. Volte para a janela do Godot e rode o jogo (F5, depois F4).
 pause
