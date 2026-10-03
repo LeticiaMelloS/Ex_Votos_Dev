@@ -362,6 +362,15 @@ func exportar_moldes(pasta: String) -> Array[String]:
 		var nome := "%s/%s__x%d_y%d_%dx%d.png" % [pasta, p[0], r.position.x, r.position.y, r.size.x, r.size.y]
 		img.save_png(nome)
 		salvos.append(nome)
+		# Versão de controle para a IA: só estrutura, preto no branco, sem grade.
+		var ctrl := Image.create(r.size.x * TILE, r.size.y * TILE, false, Image.FORMAT_RGB8)
+		ctrl.fill(Color.WHITE)
+		for y in range(r.position.y, r.end.y):
+			for x in range(r.position.x, r.end.x):
+				if x >= 0 and y >= 0 and x < largura and y < altura and "#~DF".contains(grade[y][x]):
+					ctrl.fill_rect(Rect2i((x - r.position.x) * TILE, (y - r.position.y) * TILE, TILE, TILE), Color.BLACK)
+		DirAccess.make_dir_recursive_absolute(pasta + "/controle")
+		ctrl.save_png("%s/controle/%s__controle.png" % [pasta, p[0]])
 	return salvos
 
 
