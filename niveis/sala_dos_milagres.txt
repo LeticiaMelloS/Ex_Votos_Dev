@@ -40,12 +40,12 @@
 @arte arquivo=res://arte/provisoria/ia_e7_distante.png x=166 y=-5 altura=24 parallax=0.35 z=-25
 @arte arquivo=res://arte/provisoria/ia_e7_fundo.png x=176 y=0 altura=14 parallax=0.75 z=-15
 @arte arquivo=res://arte/provisoria/ia_e7_plano.png x=176 y=0 altura=14 z=-5
-;; Objetos (gerados sobre fundo liso; o fundo claro é recortado)
-@arte arquivo=res://arte/provisoria/ia_benzedeira.png x=15 y=48 altura=4 recorte=papel z=-1
-@arte arquivo=res://arte/provisoria/ia_vela_grande.png x=105 y=35 altura=5 recorte=papel z=-1
-@arte arquivo=res://arte/provisoria/ia_altar_promessa.png x=111 y=35 altura=5 recorte=papel z=-1
-@arte arquivo=res://arte/provisoria/ia_altar_mao.png x=161 y=39 altura=5 recorte=papel z=-1
-@criatura arquivo=res://arte/provisoria/ia_criatura_cera.png altura=3 recorte=papel
+;; Objetos (o processar_arte.bat já tira o fundo claro)
+@arte arquivo=res://arte/provisoria/ia_benzedeira.png x=15 y=48 altura=4 z=-1
+@arte arquivo=res://arte/provisoria/ia_vela_grande.png x=105 y=35 altura=5 z=-1
+@arte arquivo=res://arte/provisoria/ia_altar_promessa.png x=111 y=35 altura=5 z=-1
+@arte arquivo=res://arte/provisoria/ia_altar_mao.png x=161 y=39 altura=5 z=-1
+@criatura arquivo=res://arte/provisoria/ia_criatura_cera.png altura=3
 
 ;; Bilhetes, da esquerda para a direita (textos de Game Design/design/bilhetes-de-graca.md)
 @bilhete Meu filho caiu do cavalo e ficou três dias sem acordar. Prometi trazer a cabeça dele em cera se ele abrisse os olhos. Abriu. Está aqui. Obrigada. — Mãe de um menino de Mariana

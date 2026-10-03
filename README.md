@@ -61,7 +61,10 @@ src/nivel.gd         lê os mapas de texto e cria as colisões
 src/hud.gd           textos provisórios
 niveis/              mapas das fases (veja niveis/LEIA-ME.md)
 src/arte_do_nivel.gd coloca os PNGs das linhas @arte, com parallax
-arte/provisoria/     arte provisória (arquivos ia_*.png)
+arte/entrada/        o que você exporta do Krita (ia_eN_gerada.png, objetos…)
+arte/provisoria/     o que o jogo usa (gerado pelo processar_arte.bat)
+arte-fonte/          arquivos .kra do Krita
+processar_arte.bat   transforma arte/entrada em arte/provisoria (duplo clique)
 ```
 
 ## Ajustar a sensação do movimento
