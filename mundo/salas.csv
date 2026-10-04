@@ -1,0 +1,61 @@
+﻿codigo;area;nome;x;y;largura;altura;tipo;rota;altar;liga;fora;requisito;conteudo;proposito
+C1-01;C1;Casa de Graça;15;9;1;1;história;principal;;C1-02, C1-06;;;Início do jogo. A casa vazia · as tranças da mãe penduradas num prego;Começo íntimo: a ausência da mãe antes de qualquer palavra
+C1-02;C1;Quintal dos Varais;16;9;1;1;corredor;principal;;C1-01, C1-03;;;Varais, tinas, degraus de 2 tiles;Tutorial seguro: andar e pular
+C1-03;C1;Beco Estreito;17;9;1;1;corredor;principal;;C1-02, C1-04, C1-05;;;Túnel baixo sob uma escada;Tutorial seguro: ajoelhar
+C1-04;C1;Largo do Chafariz;18;8;2;2;altar;principal;sim;C1-03;;;O chafariz colonial · a benzedeira (primeiro altar: ela benze e Graça descansa) · uma criatura de cera vista de longe;A benzedeira vê a dívida em Graça · primeiro altar · primeira criatura (sem perigo)
+C1-05;C1;Escadinha do Beco;17;7;1;2;poço;principal;;C1-03, C1-08, C2-06;;;Subida vertical por degraus e beirais;Pulo com risco leve · leva ao hub
+C1-06;C1;Telhado da Casa;15;8;1;1;corredor;opcional;;C1-01, C1-07, C1-08;;;Beiral baixo para agarrar;Tutorial seguro: agarrar bordas
+C1-07;C1;Sótão dos Vizinhos;16;8;1;1;segredo;segredo;;C1-06;;ajoelhar;Bilhete antigo da mãe · um pouco de cera;Primeiro segredo: explorar recompensa
+C1-08;C1;Varanda dos Vizinhos;15;7;2;1;escala;opcional;;C1-05, C1-06;;agarrar;Mirante: a Igreja do Alto e o Andor Vazio passando ao longe;Ver antes de alcançar · primeiro avistamento do Andor (encontro 1)
+C2-01;C2;Porteira da Cidade;13;6;1;1;corredor;principal;;C2-02, C2-03;S1 (porteira);Andor Vazio resolvido (para sair);A porteira de madeira · romeiros acampados do lado de fora;Saída para o Sertão · fechada até o fim da região
+C2-02;C2;Largo dos Contos;13;5;1;1;corredor;opcional;;C2-01, C2-05, C6-01;;;Fachada da Casa dos Contos · balança na porta;Entrada da Casa dos Contos (C6)
+C2-03;C2;Ladeira de Baixo;14;6;2;1;corredor;principal;;C2-01, C2-06;;;Início do tapete de serragem · matracas;Começo do percurso da procissão
+C2-04;C2;Beco das Escadas;15;5;2;1;corredor;opcional;;C2-05, C2-06, C3-01;;;Escada para os telhados;Entrada dos Telhados e Sinos (C3)
+C2-05;C2;Nicho do Passo de Baixo;14;5;1;1;segredo;segredo;;C2-02, C2-04;;ajoelhar;Capela de Passo fechada · ouro em pó escondido;Segredo de exploração
+C2-06;C2;Largo do Beco;16;6;2;1;altar;principal;sim;C1-05, C2-03, C2-04, C2-07, C2-08;;;Altar do hub · o riscador de milagres vende o mapa da Cidade;Descanso · primeira compra · ligação com o Beco do Chafariz
+C2-07;C2;Ladeira do Meio;18;6;3;1;arena;principal;;C2-06, C2-08, C2-09, C2-11;;;Rua íngreme · criaturas seguem as procissões;Fuga do Andor Vazio (encontro 2) · primeiro combate leve com a vela
+C2-08;C2;Sacadas;17;5;3;1;corredor;opcional;;C2-06, C2-07, C2-09;;;Varandas sobre a rua;Rota alternativa por cima quando a procissão fecha a rua
+C2-09;C2;Passo da Ladeira;20;5;1;1;quebra-cabeça;opcional;;C2-07, C2-08, C2-10;;;Capela de Passo · uma vela para acender · uma criatura;Combate e luz em espaço pequeno
+C2-10;C2;Adro da Igreja;21;5;2;1;altar;principal;sim;C2-09, C2-11, C2-12, C4-01;;;Escadaria do adro · altar;Descanso antes da igreja · entrada da Igreja do Alto (C4)
+C2-11;C2;Ladeira de Cima;21;6;3;1;corredor;principal;;C2-07, C2-10, C2-13;;;Rua íngreme · a parede da cripta (lacrada);Parte final do percurso da procissão
+C2-12;C2;Muro do Adro;23;5;2;1;corredor;principal;;C2-10, C2-15;;;Muro de pedra · brilho dourado vindo de baixo;Marca visual do eixo do mundo (a porta do final)
+C2-13;C2;Largo do Alto;24;6;2;1;arena;principal;;C2-11, C2-14, C2-15;;;Largo aberto onde a procissão para;O Andor Vazio bloqueia o caminho (encontro 3): achar outro
+C2-14;C2;Esquina do Alto da Cruz;26;5;1;2;altar;principal;sim;C2-13, C2-15, C5-01;;;Ladeira lateral · altar · o atalho da Parede de Mãos chega perto;Descanso · ligação com o Alto da Cruz (C5)
+C2-15;C2;Torre do Relógio;25;5;1;1;segredo;segredo;;C2-12, C2-13, C2-14;;agarrar;Mecanismo do relógio · bilhete;Segredo vertical · vista do largo
+C3-01;C3;Calha;16;4;1;1;corredor;opcional;;C2-04, C3-02, C3-03;;;Saída da escada para os telhados;Entrada da área
+C3-02;C3;Telhados Baixos;13;4;3;1;quebra-cabeça;opcional;;C3-01, C3-05, C3-06;;agarrar;Beirais e telhas soltas;Agarrar com risco (2ª vez)
+C3-03;C3;Beiral;17;4;2;1;corredor;opcional;;C3-01, C3-04, C3-08;;;Corredor de beirais estreitos;Ritmo e travessia
+C3-04;C3;Chaminés;19;4;2;1;segredo;segredo;;C3-03, C3-09;;agarrar;Fumaça que esconde uma passagem;Segredo: cera e ouro em pó
+C3-05;C3;Água-Furtada;13;3;1;1;corredor;opcional;;C3-02, C3-06, C6-04;;;Janela de sótão;Ligação com a Casa dos Contos (C6)
+C3-06;C3;Telhados Altos;14;3;3;1;arena;opcional;;C3-02, C3-05, C3-07, C3-10;;agarrar;Os primeiros sinos: o som atrai criaturas;Agarrar + som + combate (3ª vez, combinado)
+C3-07;C3;Torre Sineira;17;2;1;2;poço;opcional;;C3-06, C3-08, C3-10, C3-11;;agarrar;O sino grande da cidade (marco visual);Subida vertical · referência para se localizar
+C3-08;C3;Varal de Telhados;18;3;2;1;corredor;opcional;;C3-03, C3-07, C3-09;;;Cordas de varal entre telhados;Travessia sobre o vazio
+C3-09;C3;Mirante;20;3;1;1;altar;opcional;sim;C3-04, C3-08, C3-12;;;Altar no alto · câmera aberta sobre a cidade inteira;Descanso e escala: a cidade vista de cima
+C3-10;C3;Cumeeira;13;2;4;1;segredo;segredo;;C3-06, C3-07;;agarrar;A linha mais alta dos telhados · bilhete de graça;Desafio opcional de precisão
+C3-11;C3;Sino Quebrado;18;2;2;1;quebra-cabeça;opcional;;C3-07, C3-12;;agarrar;Sinos que balançam como plataformas;Quebra-cabeça de ritmo com sinos
+C3-12;C3;Passagem da Torre;20;2;1;1;segredo;segredo;;C3-09, C3-11, C4-07;;agarrar;Janela da torre da igreja;Atalho oculto para a Igreja do Alto (fica inalcançável sem a mão)
+C4-01;C4;Nártex;22;4;1;1;corredor;principal;;C2-10, C4-02, C4-03;;;Portas pesadas · o primeiro ouro;Entrada da igreja
+C4-02;C4;Nave Dourada;22;2;4;2;escala;principal;sim;C4-01, C4-04, C4-05, C4-06, C4-07, C4-08, C4-09, C4-10;;;Talha dourada · o altar onde Rosário prometeu · altar de promessas · uma grade fecha a Capela das Tranças;Primeira promessa (tutorial): a graça abre a grade · resolução do Andor Vazio (encontro 4)
+C4-03;C4;Batistério;21;4;1;1;segredo;segredo;;C4-01;;ajoelhar;Pia batismal · registro com o nome de Graça;Segredo de história
+C4-04;C4;Cripta;23;4;1;1;poço;principal;;C4-02;M1 (cripta);tranças (corda) + Andor Vazio resolvido;Escada de corda descendo no escuro;Saída para a Sala dos Milagres (M1)
+C4-05;C4;Porta Lacrada;24;4;1;1;história;principal;;C4-02;A1 (porta do final);as três dívidas;Uma porta sob o altar que brilha por dentro;Porta do final · vista o jogo inteiro
+C4-06;C4;Sacristia;25;4;2;1;altar;principal;sim;C4-02;;;Paramentos, armários · altar;Descanso antes da descida
+C4-07;C4;Coro Lateral;21;2;1;2;corredor;opcional;;C3-12, C4-02, C4-09;;;Escada do coro · balcão por cima da grade;Caminho sem prometer: dos telhados, pelo coro, por cima da grade até a Capela das Tranças
+C4-08;C4;Capela das Tranças;26;2;1;2;oferta;principal;;C4-02;;;Altar lateral com tranças antigas penduradas;Oferta das tranças: a trança vira corda (e será a corda que guia o Andor)
+C4-09;C4;Torres;21;0;3;2;segredo;segredo;;C4-02, C4-07, C4-10;;tranças (corda);Interior das torres · sinos parados;Segredo vertical com a corda
+C4-10;C4;Forro Pintado;24;0;3;2;quebra-cabeça;opcional;;C4-02, C4-09;;tranças (corda);Andaimes atrás da pintura do teto · ouro em pó · um anjo pintado que olha para baixo;Segredo vertical com a corda · vista da nave inteira
+C5-01;C5;Ladeira de Santa Efigênia;27;4;1;2;poço;principal;;C2-14, C5-02, C5-05, C5-07;;;Ladeira íngreme, quase uma escada;Subida para o Alto da Cruz
+C5-02;C5;Adro da Irmandade;28;5;1;1;corredor;principal;;C5-01, C5-03, C5-05;← M5 (atalho, só chega);;Porta que só abre de baixo;Chegada do atalho da Parede de Mãos (M5)
+C5-03;C5;Poço;29;5;1;1;poço;principal;;C5-02, C5-04;N3 (poço);tranças (corda);Poço fundo · brilho dourado subindo;Descida para a Mina do Rei (N3)
+C5-04;C5;Cruzeiro;30;5;2;1;escala;opcional;;C5-03, C5-05;;;A grande cruz de madeira (marco visual);Mirante · referência para se localizar
+C5-05;C5;Igreja da Irmandade;28;3;3;2;altar;principal;sim;C5-01, C5-02, C5-04, C5-06;;;Igreja pequena e viva · o irmão do Rosário · tambores do congado ao longe;Acolhida sem combate · a família da mãe · destino do voto da primeira promessa
+C5-06;C5;Sacristia da Irmandade;31;3;1;2;história;opcional;;C5-05;;;O livro da irmandade · a lenda de Chico Rei;História com dignidade (leitura sensível)
+C5-07;C5;Torre do Alto;27;3;1;1;segredo;segredo;;C5-01;;agarrar;Sino pequeno · vista da porteira;Segredo · ver o caminho para o Sertão
+C6-01;C6;Portaria;12;5;1;1;corredor;opcional;;C2-02, C6-02, C6-04;;;Guichê de cobrança;Entrada da Casa dos Contos
+C6-02;C6;Sala da Pesagem;10;5;2;1;quebra-cabeça;opcional;;C6-01, C6-03, C6-05;;;Balança grande: equilibrar pesos abre a porta;Quebra-cabeça de balança (1ª vez, seguro)
+C6-03;C6;Fundição;8;4;2;2;arena;opcional;;C6-02, C6-05, C6-08;;;Fornos acesos · ouro derretido · criaturas de cera dourada;Combate com calor · o ouro virando barra
+C6-04;C6;Escadaria dos Contos;12;3;1;2;poço;opcional;;C3-05, C6-01, C6-05, C6-06;;;Escada interna;Ligação com os Telhados (C3)
+C6-05;C6;Sala dos Livros;10;4;2;1;história;opcional;;C6-02, C6-03, C6-04, C6-06;;;Livros de contas do quinto da Coroa;A dívida em forma de imposto
+C6-06;C6;Gabinete do Intendente;10;3;2;1;quebra-cabeça;opcional;sim;C6-04, C6-05, C6-07;;;Balanças em série · altar;Quebra-cabeça de balança (combinado) · descanso
+C6-07;C6;Cofre;9;3;1;1;segredo;segredo;;C6-06, C6-08;;balanças resolvidas;Ouro em pó · um ex-voto de ouro;Recompensa da área
+C6-08;C6;Sótão dos Contos;8;3;1;1;segredo;segredo;;C6-03, C6-07;;agarrar;Papéis queimados · bilhete;Segredo de história

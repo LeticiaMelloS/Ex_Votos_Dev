@@ -6,7 +6,8 @@ O mapa geral do jogo, em dados. **1 célula = 1 tela de jogo** (48 × 27 tiles).
 |---|---|
 | `areas.csv` | Uma linha por área: código, nome, região, posição (`x`, `y`) e tamanho (`largura`, `altura`) em células, número de salas e de altares, papel, oferta e colosso |
 | `ligacoes.csv` | Uma linha por ligação entre áreas: de, para, tipo (`caminho`, `atalho` = mão única de→para, `oculto`, `final`), as duas pontas (`x1`,`y1` dentro de "de"; `x2`,`y2` dentro de "para"), requisito e nota |
-| `mapa.png`, `mapa.html` | Gerados automaticamente. **Não edite**: mude os `.csv` e redesenhe |
+| `salas.csv` | Uma linha por sala (preenchido região por região): código, área, nome, posição e tamanho em células, tipo, rota (`principal`, `opcional`, `segredo`), altar (`sim`), `liga` (salas vizinhas ligadas, separadas por vírgula; precisam encostar e listar a volta), `fora` (saída para outra área), requisito, conteúdo e propósito |
+| `mapa.png`, `mapa.html`, `mapa_<região>.png/.html` | Gerados automaticamente. **Não edite**: mude os `.csv` e redesenhe |
 
 ## Como editar
 1. Abra o `.csv` no Excel (ou no Bloco de Notas). O separador é `;`.
@@ -16,5 +17,5 @@ O mapa geral do jogo, em dados. **1 célula = 1 tela de jogo** (48 × 27 tiles).
 
 O desenhador **confere os dados** e avisa se há áreas sobrepostas, pontas de ligação fora da área certa ou áreas que não se ligam a nada.
 
-## Próximo nível: as salas
-Depois, cada área ganha suas salas (em `salas.csv`, região por região), seguindo `Game Design/design/level-design/prompts-de-level-design.md` (Prompt 2).
+## Salas
+Já detalhada: **Cidade das Ladeiras** (60 salas; veja `mapa_cidade.html` e `Game Design/design/level-design/regiao-1-cidade-das-ladeiras.md`). As outras regiões entram no mesmo `salas.csv`, seguindo o Prompt 2 do guia.
