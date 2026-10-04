@@ -1,0 +1,27 @@
+﻿codigo;nome;regiao;x;y;largura;altura;salas;altares;papel;oferta;colosso
+C1;Beco do Chafariz;Cidade das Ladeiras;15;7;5;3;8;1;Início e tutorial;;
+C2;Ladeira das Procissões;Cidade das Ladeiras;13;5;14;2;15;3;Hub do jogo;;Andor Vazio (vaga)
+C3;Telhados e Sinos;Cidade das Ladeiras;13;2;8;3;12;1;Opcional, vertical;;
+C4;Igreja do Alto;Cidade das Ladeiras;21;0;6;5;10;2;Fim da região 1 · porta do final;Tranças;Andor Vazio
+C5;Alto da Cruz;Cidade das Ladeiras;27;3;5;3;7;1;História · poço para as Minas;;
+C6;Casa dos Contos;Cidade das Ladeiras;8;3;5;3;8;1;Opcional · o ouro que vira imposto;;
+M1;Corredor das Fotografias;Sala dos Milagres;21;7;5;3;9;1;Entrada;;
+M2;Sala das Velas;Sala dos Milagres;21;10;5;3;10;2;Luz e escuridão;;
+M3;Oficina da Santeira;Sala dos Milagres;26;10;2;2;3;1;Loja · NPC central;;
+M4;O Depósito;Sala dos Milagres;18;13;8;3;12;1;Combate · ligação com as Minas;;
+M5;Parede de Mãos;Sala dos Milagres;26;12;3;5;8;1;Fim da região;Mão;Mão de Mil Mãos
+M6;Arquivo dos Bilhetes;Sala dos Milagres;16;10;5;3;8;1;Opcional · labirinto de cartas;;
+S1;Estrada dos Romeiros;Sertão da Romaria;1;6;12;2;14;2;Travessia aberta;;
+S2;Pouso dos Romeiros;Sertão da Romaria;4;8;3;2;4;1;Hub da região;;
+S3;Caatinga dos Espinhos;Sertão da Romaria;0;8;4;5;12;1;Furtividade;Voz;
+S4;Caminho da Corda;Sertão da Romaria;7;8;6;4;10;2;Fim da região · a mãe;;A Corda
+S5;Cruzeiros;Sertão da Romaria;4;10;3;3;8;1;Opcional · os que não chegaram;;
+S6;Serra do Horto;Sertão da Romaria;0;0;3;6;7;1;Subida vertical;;
+N1;Lavras do Rio das Velhas;Minas;5;14;7;3;12;2;Água (mundéus);;
+N2;Galerias;Minas;10;17;11;3;15;2;Aperto e escuro;Olhos;
+N3;Mina do Rei;Minas;27;17;5;3;7;1;História · poço para o Alto da Cruz;;
+N4;Pedreira do Profeta;Minas;21;18;6;3;9;1;Fim da região · escuta;;O Profeta que Acordou
+N5;O Veio;Minas;6;20;6;4;12;1;Opcional · ninho do ouro;;
+A1;A Igreja Avessa;Santuário;18;22;8;4;15;2;Descida final;;
+A2;O Altar da Promessa;Santuário;20;26;4;2;3;1;Final;Coração;
+A3;O Relicário;Santuário;26;23;3;3;7;0;Segredo final;;

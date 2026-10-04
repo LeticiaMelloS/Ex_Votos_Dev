@@ -1,0 +1,35 @@
+﻿de;para;tipo;x1;y1;x2;y2;requisito;nota
+C1;C2;caminho;17;7;17;6;;
+C2;C3;caminho;16;5;16;4;;
+C2;C4;caminho;22;5;22;4;;
+C2;C5;caminho;26;5;27;5;;
+C2;C6;caminho;13;5;12;5;;
+C3;C6;caminho;13;3;12;3;;
+C3;C4;oculto;20;2;21;2;agarrar bordas;pelos telhados até a torre
+C4;M1;caminho;23;4;23;7;tranças (corda);a cripta, por baixo da ladeira
+C2;S1;caminho;13;6;12;6;Andor Vazio resolvido;a porteira da cidade
+C5;N3;caminho;29;5;29;17;tranças (corda);o poço do Alto da Cruz
+S1;S6;caminho;1;6;1;5;;
+S6;S3;oculto;0;5;0;8;;descida pela encosta
+S1;S2;caminho;5;7;5;8;;
+S1;S3;caminho;2;7;2;8;;
+S1;S4;caminho;9;7;9;8;;
+S2;S3;caminho;4;9;3;9;;
+S2;S4;caminho;6;9;7;9;;
+S2;S5;caminho;5;9;5;10;;
+S4;N1;caminho;10;11;10;14;;o leito seco do rio
+M1;M2;caminho;23;9;23;10;;
+M2;M3;caminho;25;11;26;11;;
+M2;M6;caminho;21;11;20;11;;
+M2;M4;caminho;22;12;22;13;;
+M6;M4;caminho;19;12;19;13;;
+M4;M5;caminho;25;14;26;14;;
+M5;C5;atalho;28;12;28;5;Mão de Mil Mãos resolvida;a escalada termina no Alto da Cruz
+M4;N2;caminho;20;15;20;17;;o desmoronamento
+N1;N2;caminho;10;16;10;17;;
+N2;N5;caminho;10;19;10;20;;
+N2;N4;caminho;20;18;21;18;;
+N4;N3;caminho;26;18;27;18;;
+C4;A1;final;24;4;24;22;as três dívidas;a porta do altar: o eixo do mundo
+A1;A2;caminho;21;25;21;26;;
+A1;A3;oculto;25;23;26;23;segredo;
