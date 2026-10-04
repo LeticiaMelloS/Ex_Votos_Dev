@@ -10,23 +10,28 @@ const LARGURA := 26.0
 const ALTURA := 70.0
 const ALTURA_JOELHOS := 36.0
 
-@export var vel_andar := 260.0
-@export var vel_correr := 420.0
-@export var vel_joelhos := 70.0
-@export var vel_carregando := 200.0
-@export var aceleracao := 2200.0
-@export var desaceleracao := 2600.0
-@export var gravidade := 2200.0
-@export var vel_pulo := 650.0
-@export var vel_pulo_forte := 980.0
-@export var queda_max := 1400.0
-@export var tempo_coyote := 0.1
+# Movimento inspirado em Hollow Knight: velocidade única, quase sem inércia,
+# pulo alto e controlado (soltar o botão corta a subida), queda rápida.
+@export var vel_andar := 330.0
+@export var vel_correr := 330.0  # sem corrida: a velocidade é uma só (o botão fica sem efeito)
+@export var vel_joelhos := 80.0
+@export var vel_carregando := 230.0
+@export var aceleracao := 5000.0
+@export var desaceleracao := 6500.0
+@export var controle_no_ar := 0.9  # fração da aceleração no ar
+@export var gravidade := 2400.0  # subindo
+@export var gravidade_queda := 3400.0  # caindo
+@export var vel_pulo := 930.0  # ~4,5 tiles de altura com o botão segurado
+@export var vel_corte_pulo := 200.0  # soltar o botão limita a subida a esta velocidade
+@export var vel_pulo_forte := 1250.0
+@export var queda_max := 1150.0
+@export var tempo_coyote := 0.08
 @export var tempo_buffer := 0.12
 ## Quanto acima da cabeça ela alcança para se agarrar numa borda.
 @export var alcance_agarrar := 34.0
 @export var raio_luz := 300.0
 @export var raio_sem_luz := 70.0
-@export var vel_corda := 150.0
+@export var vel_corda := 210.0
 
 # Capacidades: as ofertas do corpo (P3) desligam algumas destas.
 var pode_agarrar := true
@@ -47,6 +52,8 @@ var pendurada := false
 var na_corda := false
 var correndo := false
 var pulos_fortes := 0
+## Enquanto > 0, a subida não é cortada ao soltar o botão (impulso ao passar por um buraco no teto).
+var impulso := 0.0
 var direcao := 1
 ## Cores dos nós da fita no pulso (uma por promessa aberta).
 var nos: Array[Color] = []
@@ -110,6 +117,7 @@ func reiniciar_em(pos: Vector2) -> void:
 
 func _physics_process(delta: float) -> void:
 	_espera_agarrar -= delta
+	impulso -= delta
 	_espera_corda -= delta
 	if controle_ativo and Input.is_action_just_pressed("luz"):
 		definir_luz(not luz_acesa)
@@ -140,7 +148,8 @@ func _physics_process(delta: float) -> void:
 			_y_min = global_position.y
 		_y_min = minf(_y_min, global_position.y)
 		_coyote -= delta
-		velocity.y = minf(velocity.y + gravidade * delta, queda_max)
+		var g := gravidade if velocity.y < 0.0 else gravidade_queda
+		velocity.y = minf(velocity.y + g * delta, queda_max)
 
 	var eixo := 0.0
 	if controle_ativo:
@@ -166,7 +175,7 @@ func _physics_process(delta: float) -> void:
 		vel = vel_correr
 	var acel := aceleracao if eixo != 0.0 else desaceleracao
 	if not no_chao:
-		acel *= 0.6
+		acel *= controle_no_ar
 	velocity.x = move_toward(velocity.x, eixo * vel, acel * delta)
 
 	# Pulo com "coyote time" (pequena tolerância depois de sair da borda)
@@ -184,8 +193,8 @@ func _physics_process(delta: float) -> void:
 		_buffer = 0.0
 		_coyote = 0.0
 	# Pulo variável: soltar o botão cedo corta a subida.
-	if velocity.y < 0.0 and not (controle_ativo and Input.is_action_pressed("pular")):
-		velocity.y += gravidade * delta * 1.5
+	if velocity.y < 0.0 and impulso <= 0.0 and not (controle_ativo and Input.is_action_pressed("pular")):
+		velocity.y = maxf(velocity.y, -vel_corte_pulo)
 
 	move_and_slide()
 

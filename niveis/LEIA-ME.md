@@ -2,7 +2,7 @@
 
 Cada fase é um arquivo de texto. **Cada caractere é um tile de 40×40 px.** Dá para editar no Bloco de Notas: salve e aperte **R** no jogo para recarregar.
 
-A protagonista tem ~1,75 tile de altura. Ela pula ~2,4 tiles e, agarrando a borda, alcança ~5 tiles. Ajoelhada, ocupa menos de 1 tile.
+A protagonista tem ~1,75 tile de altura. **Movimento à *Hollow Knight*:** pula até ~4,5 tiles (segurando o botão; um toque rápido dá ~1 tile), ~6 tiles de distância, e agarrando a borda alcança ~7 tiles. Ajoelhada, ocupa menos de 1 tile. Medidas de design (com folga) em `Game Design/design/level-design/guia-de-level-design.md`.
 
 ## Cabeçalho
 
@@ -30,6 +30,7 @@ Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_correr`, `vela_de
 | `C` | Checkpoint (onde ela renasce) |
 | `G` | Fim da fase |
 | `~` | Abismo (volta ao checkpoint) |
+| `^` | Cravos (os pregos dos ex-votos): encostar devolve ao último chão seguro, como os espinhos de *Hollow Knight* |
 | `1`…`9` | Altar de promessas (o número liga à linha `@altar`) |
 | `D`, `F` | Portões: sólidos até uma graça do tipo "abrir" |
 | `B`, `H` | Ponte / caminho de cera: só existem depois de uma graça do tipo "ativar" |

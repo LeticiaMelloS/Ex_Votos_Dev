@@ -241,6 +241,11 @@ func _draw() -> void:
 						draw_rect(r, COR_PORTAO)
 						for i in 3:
 							draw_line(r.position + Vector2(8 + i * 12, 0), r.position + Vector2(8 + i * 12, TILE), COR_PEDRA, 3)
+				"^":
+					# Cravos: os pregos que seguram os ex-votos, de ponta para cima.
+					for i in 4:
+						var bx := r.position.x + i * 10
+						draw_colored_polygon(PackedVector2Array([Vector2(bx, r.end.y), Vector2(bx + 5, r.position.y + 8), Vector2(bx + 10, r.end.y)]), COR_PEDRA)
 				"~":
 					draw_rect(r, COR_VAZIO)
 				"e", "E":

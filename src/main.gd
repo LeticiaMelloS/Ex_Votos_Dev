@@ -40,6 +40,9 @@ var _area_atual := ""
 var _ultimo_aviso := ""
 var _tempo_aviso := 0.0
 var _trava_transicao := 0.0
+## Último chão seguro (perigos como os cravos devolvem a protagonista para cá, como em Hollow Knight).
+var _chao_seguro := Vector2.ZERO
+var _chao_seguro_sala := ""
 
 
 func _ready() -> void:
@@ -216,6 +219,7 @@ func _trocar_sala(codigo: String, ponto_mundo: Vector2) -> void:
 	# Subindo por uma passagem do teto (sem escada): um impulso para alcançar o chão da sala de cima.
 	if local.y > t.y - 80.0 and jogadora.velocity.y < -50.0 and not jogadora.na_corda:
 		jogadora.velocity.y = -760.0
+		jogadora.impulso = 0.3
 	_ajustar_camera(true)
 	_atualizar_escuridao()
 	# As criaturas da dívida seguem a protagonista: reaparecem pela mesma passagem.
@@ -317,6 +321,12 @@ func _physics_process(delta: float) -> void:
 			return
 	var cel := nivel.celula(jogadora.centro())
 	var pes := nivel.celula(jogadora.global_position - Vector2(0, 10))
+	if jogadora.is_on_floor() and not _perto_de_perigo():
+		_chao_seguro = jogadora.global_position
+		_chao_seguro_sala = sala_atual
+	if cel == "^" or pes == "^" or (mundo and (cel == "~" or pes == "~")):
+		_voltar_ao_chao_seguro()
+		return
 	if cel == "C" or pes == "C":
 		var novo := nivel.pe_da_celula(Vector2i(nivel.coluna(jogadora.global_position), floori((jogadora.global_position.y - 10) / Nivel.TILE)))
 		if novo != respawn:
@@ -541,6 +551,26 @@ func _fechar_menu() -> void:
 	hud.fechar_menu()
 	if jogadora:
 		jogadora.controle_ativo = not _terminou
+
+
+func _perto_de_perigo() -> bool:
+	var p := jogadora.global_position
+	for dx in [-Nivel.TILE, 0.0, Nivel.TILE]:
+		for dy in [-10.0, 10.0]:
+			var c := nivel.celula(p + Vector2(dx, dy))
+			if c == "^" or c == "~":
+				return true
+	return false
+
+
+## Perigo (cravos, abismo): volta ao último chão seguro, sem perder o progresso.
+func _voltar_ao_chao_seguro() -> void:
+	if _chao_seguro_sala != sala_atual or _chao_seguro == Vector2.ZERO:
+		_renascer()
+		return
+	jogadora.reiniciar_em(_chao_seguro)
+	camera.global_position = _chao_seguro
+	hud.mostrar_mensagem("", 0.1)
 
 
 func _ao_ser_pega() -> void:

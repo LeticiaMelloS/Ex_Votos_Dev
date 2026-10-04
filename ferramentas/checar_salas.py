@@ -3,10 +3,11 @@
 Simula, numa grade de tiles, o que a protagonista consegue fazer
 (valores "com folga" do guia de level design):
   - andar; ajoelhada, passar em vão de 1 tile;
-  - pular até 2 tiles para cima e 3 de distância (5 se não subir);
-  - cair de qualquer altura;
+  - pular (movimento à Hollow Knight): até 4 tiles para cima; distância 6 sem subir,
+    5 subindo até 3, 4 subindo 4;
+  - cair de qualquer altura; cravos (^) não são chão;
   - escadas (L) e, com --corda, cordas (K);
-  - agarrar bordas até 4 tiles acima (--sem-agarrar desliga).
+  - agarrar bordas de 5 a 6 tiles acima (--sem-agarrar desliga).
 Para cada sala, diz quais passagens (bordas abertas) NÃO são alcançáveis a partir de cada entrada.
 É uma aproximação: serve para achar bloqueios, não substitui jogar.
 
@@ -56,7 +57,7 @@ class Sala:
         return self.livre(x, y) and self.livre(x, y - 1)
 
     def parada(self, x, y):
-        return 0 <= x < self.W and self.livre(x, y) and (self.apoio(x, y) or self.escada(x, y))
+        return 0 <= x < self.W and self.livre(x, y) and self.c(x, y) != "^"             and (self.apoio(x, y) or self.escada(x, y))
 
     def cair(self, x, y):
         """Cai de (x, y) até achar apoio ou escada; sai por baixo se não houver chão."""
@@ -65,7 +66,7 @@ class Sala:
         while True:
             if y >= self.H:
                 return ("saida", "baixo", x)
-            if self.solido(x, y):
+            if self.solido(x, y) or self.c(x, y) == "^":
                 return None
             if self.apoio(x, y) or self.escada(x, y):
                 return (x, y)
@@ -80,7 +81,7 @@ class Sala:
             nx = x + d
             if nx < 0 or nx >= self.W:
                 res.append(("saida", "esquerda" if nx < 0 else "direita", y))
-            elif self.livre(nx, y) and (no_chao or na_escada):
+            elif self.livre(nx, y) and self.c(nx, y) != "^" and (no_chao or na_escada):
                 res.append(self.cair(nx, y))
         # escada: subir, descer, sair pelo topo
         if na_escada:
@@ -98,14 +99,14 @@ class Sala:
             res.append((x, y - 1))
         # pulo
         if no_chao and self.em_pe(x, y):
-            for dy in range(0, 3):
-                alcance = 3 if dy > 0 else 5
+            for dy in range(0, 5):
+                alcance = {0: 6, 1: 5, 2: 5, 3: 5, 4: 4}[dy]
                 for d in (-1, 1):
                     for dx in range(1, alcance + 1):
                         tx, ty = x + d * dx, y - dy
                         topo = min(y, ty)
                         livre = self.livre(x, y - 2) and all(self.livre(x + d * k, r) for k in range(1, dx + 1)
-                                                                 for r in range(topo - 1 - (1 if dy == 2 else 0), topo + 1))
+                                                                 for r in range(topo - 2, topo + 1))
                         if not livre:
                             break
                         if tx < 0 or tx >= self.W:
@@ -115,13 +116,13 @@ class Sala:
                             res.append((tx, ty))
                         elif dy == 0:
                             res.append(self.cair(tx, ty))
-            for k in (1, 2):
+            for k in (1, 2, 3, 4):
                 if self.escada(x, y - k) and all(self.livre(x, y - j) for j in range(0, k + 1)):
                     res.append((x, y - k))
-        # agarrar bordas (3 a 4 tiles acima)
+        # agarrar bordas (5 a 6 tiles acima)
         if self.agarrar and no_chao and self.em_pe(x, y):
             for d in (-1, 1):
-                for dy in (3, 4):
+                for dy in (5, 6):
                     wx = x + d
                     if all(self.solido(wx, y - j) for j in range(0, dy)) and self.em_pe(wx, y - dy) \
                             and all(self.livre(x, y - j) for j in range(0, dy + 1)):
