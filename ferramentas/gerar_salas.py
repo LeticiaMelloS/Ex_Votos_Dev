@@ -17,7 +17,7 @@ MUNDO = os.path.join(RAIZ, "mundo")
 SALAS = os.path.join(RAIZ, "niveis", "salas")
 CW, CH = 48, 27  # tiles por célula
 ABERTURA = 5     # altura das passagens laterais, em tiles
-LARG_BURACO = 4  # largura das passagens verticais, em tiles
+LARG_BURACO = 1  # passagens verticais: só a coluna da escada (ao sair dela, o chão está dos dois lados)
 
 # Conteúdo especial por sala (o resto vem da planilha).
 PROMESSAS = {"C4-02": "vela_irmandade"}
@@ -75,7 +75,7 @@ class Sala:
         chao = (cy - self.y + 1) * CH - 2
         col = 0 if lado == "esquerda" else self.W - 1
         for lin in range(chao - ABERTURA, chao):
-            self.por(lin, col, "D" if portao else ".")
+            self.por(lin, col, portao if isinstance(portao, str) else ("D" if portao else "."))
         if chao != self.H - 2:
             # Passagem no meio da altura: uma beirada e uma escada até ela.
             passo = 1 if lado == "esquerda" else -1
@@ -88,7 +88,7 @@ class Sala:
     def abertura_vertical(self, lado, cel_ini, cel_fim, tipo="."):
         """Buraco no chão ('baixo') ou no teto ('cima'), com escada para subir."""
         meio = int((cel_ini + cel_fim) / 2 * CW) - self.x * CW
-        cols = range(meio - LARG_BURACO // 2, meio + LARG_BURACO // 2)
+        cols = range(meio - LARG_BURACO // 2, meio - LARG_BURACO // 2 + LARG_BURACO)
         if lado == "baixo":
             for col in cols:
                 for lin in (self.H - 2, self.H - 1):
@@ -128,8 +128,8 @@ def main():
                 continue
             lado, ini, fim = bc
             if lado in ("esquerda", "direita"):
-                portao = s["codigo"] == "C4-02" and outra == "C4-08"  # a grade da Capela das Tranças
-                sala.abertura_lateral(lado, ini, fim, portao)
+                grade = s["codigo"] == "C4-02" and outra == "C4-08"  # a grade da Capela das Tranças (abre com a promessa)
+                sala.abertura_lateral(lado, ini, fim, "F" if grade else False)
             else:
                 sala.abertura_vertical(lado, ini, fim)
         # Passagens para outras áreas (ligacoes.csv)

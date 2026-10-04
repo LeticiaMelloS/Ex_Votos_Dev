@@ -24,6 +24,10 @@ O jogo **começa no Mundo**: as 60 salas da Cidade das Ladeiras, ligadas pelo ma
 
 **Salas:** cada uma é um arquivo em `niveis/salas/` (ex.: `C1-01.txt`), no mesmo formato dos mapas de texto. Para criar as salas novas da planilha `mundo/salas.csv`, dê duplo clique em **`gerar_salas.bat`**: ele faz um greybox inicial com as aberturas certas e **nunca sobrescreve** uma sala que já existe.
 
+**Conferir uma sala depois de editar:** `checar_salas.bat` simula o movimento (pulo de 2 tiles, distância 3/5, escadas, joelhos, agarrar) e avisa se alguma passagem ficou inalcançável. Ex.: `checar_salas.bat C1-05 --sem-agarrar`. É aproximado: serve para achar bloqueios, não substitui jogar.
+
+**Já blocadas (percurso principal):** C1-01 a C1-08, C2-06 a C2-11, C4-01, C4-02, C4-07, C4-08. As outras salas ainda são o greybox gerado.
+
 **Saídas para regiões não construídas** (Sala dos Milagres, Sertão, Minas, Santuário) mostram um aviso. Portões (`D`) marcam as saídas com requisito: a porteira, a cripta e a porta do final.
 
 ## Controles

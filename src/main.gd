@@ -213,6 +213,9 @@ func _trocar_sala(codigo: String, ponto_mundo: Vector2) -> void:
 	sala_atual = codigo
 	var t := nivel.tamanho_px()
 	jogadora.global_position = Vector2(clampf(local.x, 4.0, t.x - 4.0), clampf(local.y, 1.0, t.y - 1.0))
+	# Subindo por uma passagem do teto (sem escada): um impulso para alcançar o chão da sala de cima.
+	if local.y > t.y - 80.0 and jogadora.velocity.y < -50.0 and not jogadora.na_corda:
+		jogadora.velocity.y = -760.0
 	_ajustar_camera(true)
 	_atualizar_escuridao()
 	# As criaturas da dívida seguem a protagonista: reaparecem pela mesma passagem.
@@ -226,6 +229,8 @@ func _trocar_sala(codigo: String, ponto_mundo: Vector2) -> void:
 ## Tudo o que acontece ao entrar numa sala (inclusive a primeira).
 func _ao_entrar_sala() -> void:
 	_falas_ditas.clear()
+	if not mundo.visitadas.has(sala_atual) and nivel.meta.has("tutorial"):
+		hud.mostrar_mensagem(nivel.meta["tutorial"], 6.0)
 	mundo.visitadas[sala_atual] = true
 	promessas.registrar_sala(sala_atual)
 	# Portões e pontes que já mudaram nesta sala.

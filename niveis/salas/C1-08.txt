@@ -1,9 +1,12 @@
+;; Sala C1-08 — blocada (percurso principal). Edite à vontade; mantenha as aberturas das bordas.
 ;; Sala C1-08 · Varanda dos Vizinhos (área C1). Greybox gerado por ferramentas/gerar_salas.py: edite à vontade.
 ;; Conteúdo: Mirante: a Igreja do Alto e o Andor Vazio passando ao longe
 ;; Propósito: Ver antes de alcançar · primeiro avistamento do Andor (encontro 1)
 @nome C1-08 · Varanda dos Vizinhos
 @dica Ver antes de alcançar · primeiro avistamento do Andor (encontro 1)
 @sala C1-08
+@escuro 0.35
+@bilhete Toda noite o andor desce a rua de baixo sozinho. Faz tempo que ninguém tem coragem de carregar.
 ################################################################################################
 #zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
 #zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
@@ -23,11 +26,11 @@
 #zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
 #zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
 #zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
-#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz..........zzzzz#
 #zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.
-#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.
-#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.
-#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.
-#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.
-######################..L.######################################################################
-######################..L.######################################################################
+#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz...zz##########zzzzz.
+#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz...zzzzzzzzzzzzzzzzz.
+#zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz###zz###zzzzzzzzzzzzzzzzz.
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzz##zzzzzzzzzzzzz##zzz?zzzzzzzzz###zz###zzzzzzzzzzzzzzzzz.
+########################L#######################################################################
+########################L#######################################################################
