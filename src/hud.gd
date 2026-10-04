@@ -11,6 +11,9 @@ var _debug := Label.new()
 var _titulo := Label.new()
 var _menu_fundo := ColorRect.new()
 var _menu := Label.new()
+var _anuncio := Label.new()
+var _tween_anuncio: Tween
+var mapa := MapaHud.new()
 var _tween: Tween
 
 
@@ -31,6 +34,10 @@ func _ready() -> void:
 	_menu.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	fechar_menu()
 	_debug.visible = false
+	_configurar(_anuncio, 52, Vector2(160, 300), Vector2(1600, 120))
+	_anuncio.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_anuncio.modulate.a = 0.0
+	add_child(mapa)
 
 
 func _configurar(l: Label, tamanho: int, pos: Vector2, tam: Vector2) -> void:
@@ -51,6 +58,23 @@ func mostrar_mensagem(texto: String, duracao := 4.0) -> void:
 	_tween = create_tween()
 	_tween.tween_interval(duracao)
 	_tween.tween_property(_mensagem, "modulate:a", 0.0, 1.0)
+
+
+## Nome da área, grande, ao entrar numa área nova (como em Hollow Knight).
+func anunciar(texto: String) -> void:
+	if _tween_anuncio:
+		_tween_anuncio.kill()
+	_anuncio.text = texto
+	_anuncio.modulate.a = 0.0
+	_tween_anuncio = create_tween()
+	_tween_anuncio.tween_property(_anuncio, "modulate:a", 1.0, 0.6)
+	_tween_anuncio.tween_interval(1.8)
+	_tween_anuncio.tween_property(_anuncio, "modulate:a", 0.0, 1.0)
+
+
+func alternar_mapa() -> void:
+	mapa.visible = not mapa.visible
+	mapa.queue_redraw()
 
 
 func definir_titulo(texto: String) -> void:

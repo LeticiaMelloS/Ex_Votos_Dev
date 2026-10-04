@@ -10,6 +10,22 @@ Protótipos em **greybox** (retângulos, sem arte) para responder às perguntas 
 
 Se o Godot avisar que o projeto é de uma versão anterior, aceite a conversão.
 
+## Modo Mundo (P6)
+
+O jogo **começa no Mundo**: as 60 salas da Cidade das Ladeiras, ligadas pelo mapa em `mundo/`. Atravessar a borda de uma sala leva à vizinha (para os lados pelas passagens, para cima pelas escadas, para baixo pelos buracos).
+
+| Tecla | O que faz |
+|---|---|
+| M | Mapa das salas visitadas |
+| E num altar | Descansa e **salva** (o jogo volta para o último altar) |
+| R | Volta ao último altar |
+| F6 | Volta ao Mundo (a partir de um protótipo) |
+| F8 | Recomeça o Mundo do zero (apaga o salvamento) |
+
+**Salas:** cada uma é um arquivo em `niveis/salas/` (ex.: `C1-01.txt`), no mesmo formato dos mapas de texto. Para criar as salas novas da planilha `mundo/salas.csv`, dê duplo clique em **`gerar_salas.bat`**: ele faz um greybox inicial com as aberturas certas e **nunca sobrescreve** uma sala que já existe.
+
+**Saídas para regiões não construídas** (Sala dos Milagres, Sertão, Minas, Santuário) mostram um aviso. Portões (`D`) marcam as saídas com requisito: a porteira, a cripta e a porta do final.
+
 ## Controles
 
 | Ação | Teclado | Controle |
@@ -23,7 +39,8 @@ Se o Godot avisar que o projeto é de uma versão anterior, aceite a conversão.
 | Escolher no altar | 1, 2, 3 | — |
 | Corda: subir / descer / soltar | segurar Espaço ou W / segurar S / uma direção | A / ↓ / direção |
 | Reiniciar fase | R | Back |
-| Trocar de fase | F1 / F2 / F3 / F4 | — |
+| Protótipos | F1 / F2 / F3 / F4 | — |
+| Mundo | F6 | — |
 | Capturar a tela sem textos (para desenhar por cima) | F12 → salva em `capturas/` | — |
 | Debug (FPS, promessas, zonas) | Tab | — |
 
@@ -56,6 +73,10 @@ src/promessas.gd     catálogo e regras das promessas
 src/criatura.gd      criatura da dívida
 src/oferendas.gd     ofertas do corpo (tranças, mão)
 src/nivel.gd         lê os mapas de texto e cria as colisões
+src/mundo.gd         o mundo: salas, passagens, salvamento
+src/mapa_hud.gd      mapa das salas visitadas (M)
+niveis/salas/        uma sala por arquivo (gerado por gerar_salas.bat)
+ferramentas/         gerar_salas.py e desenhar_mapa.py
 src/hud.gd           textos provisórios
 niveis/              mapas das fases (veja niveis/LEIA-ME.md)
 ```

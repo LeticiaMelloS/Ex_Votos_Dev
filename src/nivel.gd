@@ -14,6 +14,9 @@ const COR_VAZIO := Color(0.04, 0.035, 0.03)
 const COR_CERA := Color(0.93, 0.87, 0.72)
 const COR_OURO := Color(0.85, 0.66, 0.18)
 
+## Avisa quando um portão, ponte ou corda muda (o modo Mundo guarda isso entre salas).
+signal grupo_mudou(letra: String, ativo: bool)
+
 var grade: Array[String] = []
 var largura := 0
 var altura := 0
@@ -190,6 +193,7 @@ func registrar_oferenda(altar: String) -> void:
 ## Liga (ativo = true) ou desliga um grupo de tiles: portões, pontes, caminhos ocultos, corda.
 func ativar_grupo(letra: String, ativo: bool) -> void:
 	grupos_ativos[letra] = ativo
+	grupo_mudou.emit(letra, ativo)
 	if _corpos.has(letra):
 		for forma in _corpos[letra].get_children():
 			forma.set_deferred("disabled", not ativo)
@@ -258,6 +262,14 @@ func _draw() -> void:
 					# NPC sentada (benzedeira): corpo escuro, lenço claro.
 					draw_rect(Rect2(r.position + Vector2(8, 14), Vector2(24, 26)), COR_PEDRA)
 					draw_rect(Rect2(r.position + Vector2(11, 4), Vector2(18, 12)), Color(0.97, 0.95, 0.88))
+				"L":
+					# Escada de mão (sempre disponível).
+					var e := r.position.x + 10
+					draw_line(Vector2(e, r.position.y), Vector2(e, r.end.y), COR_PORTAO, 3)
+					draw_line(Vector2(e + 20, r.position.y), Vector2(e + 20, r.end.y), COR_PORTAO, 3)
+					for i in 3:
+						var yy := r.position.y + 6 + i * 13
+						draw_line(Vector2(e, yy), Vector2(e + 20, yy), COR_PORTAO, 3)
 				"K":
 					# A trança-corda: escura, trançada (cabelo, não cera).
 					if grupos_ativos["K"]:

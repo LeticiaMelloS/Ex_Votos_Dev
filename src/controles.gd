@@ -12,6 +12,7 @@ static func registrar() -> void:
 	_acao("luz", [KEY_Q], [JOY_BUTTON_Y])
 	_acao("reiniciar", [KEY_R], [JOY_BUTTON_BACK])
 	_acao("debug", [KEY_TAB], [])
+	_acao("mapa", [KEY_M], [JOY_BUTTON_START])
 	_eixo("mover_esquerda", JOY_AXIS_LEFT_X, -1.0)
 	_eixo("mover_direita", JOY_AXIS_LEFT_X, 1.0)
 	_eixo("ajoelhar", JOY_AXIS_LEFT_Y, 1.0)

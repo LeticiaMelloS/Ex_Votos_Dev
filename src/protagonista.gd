@@ -266,7 +266,10 @@ func _subir_degrau() -> void:
 
 
 func _corda_aqui() -> bool:
-	return nivel != null and nivel.grupos_ativos["K"] and nivel.celula(centro()) == "K"
+	if nivel == null:
+		return false
+	var c := nivel.celula(centro())
+	return c == "L" or (c == "K" and nivel.grupos_ativos["K"])
 
 
 func _agarrar_corda() -> void:
@@ -298,8 +301,10 @@ func _processar_corda() -> void:
 	if dy > 0.0 and is_on_floor():
 		na_corda = false
 		return
-	# Os pés não passam do alto da última célula de corda.
-	if nivel.celula(global_position - Vector2(0, 1)) != "K":
+	# Os pés não passam do alto da última célula de corda ou escada.
+	# (No modo Mundo, a escada continua na sala de cima: quem cuida da troca é o main.)
+	var acima := nivel.celula(global_position - Vector2(0, 1))
+	if acima != "K" and acima != "L" and global_position.y - 1.0 >= 0.0:
 		var linha := floori((global_position.y - 1.0) / Nivel.TILE)
 		global_position.y = (linha + 1) * Nivel.TILE
 

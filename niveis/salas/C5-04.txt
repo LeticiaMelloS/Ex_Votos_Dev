@@ -1,0 +1,33 @@
+;; Sala C5-04 · Cruzeiro (área C5). Greybox gerado por ferramentas/gerar_salas.py: edite à vontade.
+;; Conteúdo: A grande cruz de madeira (marco visual)
+;; Propósito: Mirante · referência para se localizar
+@nome C5-04 · Cruzeiro
+@dica Mirante · referência para se localizar
+@sala C5-04
+######################..L.######################################################################
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+#zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+.zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+.zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+.zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+.zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+.zzzzzzzzzzzzzzzzzzzzzzzLzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz#
+################################################################################################
+################################################################################################

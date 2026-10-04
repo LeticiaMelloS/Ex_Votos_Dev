@@ -26,6 +26,11 @@ var jogadora: Protagonista
 
 
 func ja_ofertado(altar: String) -> bool:
+	match altar:
+		"t":
+			return not jogadora.tem_trancas
+		"m":
+			return not jogadora.tem_mao
 	return nivel.oferendas.has(altar)
 
 

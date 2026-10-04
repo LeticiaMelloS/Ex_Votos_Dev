@@ -48,6 +48,14 @@ const CATALOGO := {
 		"voto_txt": "chegar até a vela do altar de dentro (moldura dourada)",
 		"prazo_salas": 2,
 	},
+	"vela_irmandade": {
+		"texto": "Se eu passar, acendo uma vela no altar da irmandade.",
+		"graca": {"tipo": "abrir", "grupo": "F"},
+		"graca_txt": "a grade da capela se abre",
+		"voto": {"tipo": "chegar_sala", "sala": "C5-05"},
+		"voto_txt": "chegar ao altar da Igreja da Irmandade, no Alto da Cruz",
+		"prazo_salas": 4,
+	},
 	"nao_correr": {
 		"texto": "Não corro até o fim da ladeira.",
 		"graca": {"tipo": "salto_forte", "usos": 1},
@@ -70,11 +78,24 @@ var criaturas: Array[Criatura] = []
 var _feitas_no_altar := {}  # "altar:id" -> true
 var _salas := {}  # coluna do limiar -> true (cada sala conta uma vez)
 var cumpridas := 0
+## No modo Mundo: código da sala atual (as salas contam para os prazos e prefixam os altares).
+var sala_atual := ""
 var quebradas := 0
 
 
 func _ready() -> void:
 	jogadora.aterrissou.connect(_ao_aterrissar)
+
+
+## Modo Mundo: cada sala nova em que ela entra conta uma sala para os prazos.
+func registrar_sala(codigo: String) -> void:
+	sala_atual = codigo
+	if not _salas.has(codigo):
+		_salas[codigo] = true
+
+
+func _chave(altar: String, pid: String) -> String:
+	return "%s/%s:%s" % [sala_atual, altar, pid]
 
 
 func salas_visitadas() -> int:
@@ -91,7 +112,7 @@ func opcoes_do_altar(altar: String) -> Array[Dictionary]:
 	for item in nivel.meta.get("altar_" + altar, []):
 		var partes: PackedStringArray = String(item).split(":")
 		var pid := partes[0]
-		if not CATALOGO.has(pid) or _feitas_no_altar.has(altar + ":" + pid):
+		if not CATALOGO.has(pid) or _feitas_no_altar.has(_chave(altar, pid)):
 			continue
 		# Sem a mão, não há como carregar nada.
 		if CATALOGO[pid]["voto"]["tipo"] == "carregar" and not jogadora.tem_mao:
@@ -126,6 +147,7 @@ func escolher(op: Dictionary, altar: String) -> void:
 		"inicio_salas": salas_visitadas(),
 		"fator": 1,
 		"divida": null,
+		"sala": sala_atual,
 	}
 	if op["tipo"] == "quitar":
 		var c: Criatura = op["criatura"]
@@ -135,7 +157,7 @@ func escolher(op: Dictionary, altar: String) -> void:
 		p["altar"] = c.altar
 		mensagem.emit("Você promete pagar o que deve.")
 	else:
-		_feitas_no_altar[altar + ":" + op["id"]] = true
+		_feitas_no_altar[_chave(altar, op["id"])] = true
 		var graca: Dictionary = d["graca"].duplicate()
 		if op["grupo"] != "":
 			graca["grupo"] = op["grupo"]
@@ -214,6 +236,10 @@ func _checar(p: Dictionary) -> void:
 			if nivel.celula(jogadora.centro()) == "T":
 				_cumprir(p)
 				return
+		"chegar_sala":
+			if sala_atual == v["sala"]:
+				_cumprir(p)
+				return
 	var prazo: int = p["def"]["prazo_salas"] * fator
 	if prazo > 0 and _passadas(p) >= prazo:
 		_falhar(p, "O prazo acabou.")
@@ -238,7 +264,8 @@ func _cumprir(p: Dictionary) -> void:
 		mensagem.emit("A dívida foi paga. A criatura se desfaz em cera.")
 	else:
 		mensagem.emit("Promessa cumprida. Um ex-voto de agradecimento aparece no altar.")
-	nivel.adicionar_ex_voto(nivel.pe_da_celula(nivel.altares[p["altar"]]))
+	if nivel.altares.has(p["altar"]) and p.get("sala", sala_atual) == sala_atual:
+		nivel.adicionar_ex_voto(nivel.pe_da_celula(nivel.altares[p["altar"]]))
 
 
 func _falhar(p: Dictionary, motivo: String) -> void:
@@ -254,7 +281,10 @@ func _falhar(p: Dictionary, motivo: String) -> void:
 	c.alvo = jogadora
 	c.altar = p["altar"]
 	c.promessa_id = p["id"]
-	c.origem = nivel.pe_da_celula(nivel.altares[p["altar"]]) - Vector2(0, 40)
+	if nivel.altares.has(p["altar"]) and p.get("sala", sala_atual) == sala_atual:
+		c.origem = nivel.pe_da_celula(nivel.altares[p["altar"]]) - Vector2(0, 40)
+	else:
+		c.origem = jogadora.global_position - Vector2(jogadora.direcao * 300, 60)
 	c.pegou.connect(ao_ser_pega)
 	camada_criaturas.add_child(c)
 	criaturas.append(c)
