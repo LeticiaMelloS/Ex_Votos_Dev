@@ -52,6 +52,12 @@ func voltar() -> void:
 	_espera = 2.5
 
 
+## A chama a derrete por um momento; ela se reforma ali mesmo, mais rápido que as outras.
+func derreter_por_um_tempo() -> void:
+	if not _dissolvendo:
+		_espera = 3.0
+
+
 func dissolver() -> void:
 	_dissolvendo = true
 
@@ -60,7 +66,7 @@ func _draw() -> void:
 	var cor := Nivel.COR_CERA
 	if quitando:
 		cor = cor.lerp(Color(1, 1, 1), 0.4)
-	var nascendo := clampf(1.0 - _espera / 1.8, 0.2, 1.0) if not _dissolvendo else 1.0
+	var nascendo := clampf(1.0 - _espera / 3.0, 0.2, 1.0) if not _dissolvendo else 1.0
 	var r := 22.0 * nascendo * (1.0 + sin(_t * 6.0) * 0.05)
 	draw_circle(Vector2.ZERO, r, cor)
 	# Pingos de cera escorrendo.

@@ -1,7 +1,7 @@
 class_name Hud
 extends CanvasLayer
 ## Textos provisórios do protótipo: mensagens, menu do altar e painel de debug.
-## Na versão final, quase nada disto fica na tela (ver seção 7.5 do documento).
+## Na versão final, quase nada disto fica na tela (biblia/04-sistemas.md, 4.11).
 
 const COR_TEXTO := Color(0.95, 0.92, 0.85)
 
@@ -12,6 +12,8 @@ var _titulo := Label.new()
 var _menu_fundo := ColorRect.new()
 var _menu := Label.new()
 var _anuncio := Label.new()
+var _cera := Label.new()
+var _tween_cera: Tween
 var _tween_anuncio: Tween
 var mapa := MapaHud.new()
 var _tween: Tween
@@ -37,6 +39,9 @@ func _ready() -> void:
 	_configurar(_anuncio, 52, Vector2(160, 300), Vector2(1600, 120))
 	_anuncio.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_anuncio.modulate.a = 0.0
+	_configurar(_cera, 26, Vector2(1560, 16), Vector2(340, 40))
+	_cera.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_cera.modulate.a = 0.0
 	add_child(mapa)
 
 
@@ -70,6 +75,17 @@ func anunciar(texto: String) -> void:
 	_tween_anuncio.tween_property(_anuncio, "modulate:a", 1.0, 0.6)
 	_tween_anuncio.tween_interval(1.8)
 	_tween_anuncio.tween_property(_anuncio, "modulate:a", 0.0, 1.0)
+
+
+## A cera juntada aparece só quando muda, e some (sem números fixos na tela).
+func mostrar_cera(total: int) -> void:
+	if _tween_cera:
+		_tween_cera.kill()
+	_cera.text = "cera  %d" % total
+	_cera.modulate.a = 1.0
+	_tween_cera = create_tween()
+	_tween_cera.tween_interval(2.0)
+	_tween_cera.tween_property(_cera, "modulate:a", 0.0, 1.0)
 
 
 func alternar_mapa() -> void:

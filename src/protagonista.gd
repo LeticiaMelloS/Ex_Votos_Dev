@@ -1,10 +1,15 @@
 class_name Protagonista
 extends CharacterBody2D
-## Movimento da protagonista: andar, correr, pular, agarrar bordas, ajoelhar.
+## Movimento da protagonista: andar, pular, agarrar bordas, ajoelhar; a vela (luz e chama) e a vida.
 ## A origem do nó fica nos pés. Todos os números são para ajustar em playtest
 ## (aparecem no Inspetor se você transformar isto numa cena).
 
 signal aterrissou(altura_queda: float)
+## A chama da vela atingiu esta área (em coordenadas do nível). forte = vela da irmandade.
+signal golpeou(area: Rect2, forte: bool)
+## A vida chegou a zero: a vela se apagou.
+signal apagou
+signal pulou(forte: bool)
 
 const LARGURA := 26.0
 const ALTURA := 70.0
@@ -12,8 +17,7 @@ const ALTURA_JOELHOS := 36.0
 
 # Movimento inspirado em Hollow Knight: velocidade única, quase sem inércia,
 # pulo alto e controlado (soltar o botão corta a subida), queda rápida.
-@export var vel_andar := 330.0
-@export var vel_correr := 330.0  # sem corrida: a velocidade é uma só (o botão fica sem efeito)
+@export var vel_andar := 330.0  # velocidade única: não há corrida
 @export var vel_joelhos := 80.0
 @export var vel_carregando := 230.0
 @export var aceleracao := 5000.0
@@ -33,13 +37,22 @@ const ALTURA_JOELHOS := 36.0
 @export var raio_sem_luz := 70.0
 @export var vel_corda := 210.0
 
+# Combate de sobrevivência (biblia/04-sistemas.md, 4.4): a vela é a arma, e a vida aparece na chama.
+@export var vida_max := 3
+@export var alcance_chama := 60.0  # ~1,5 tile à frente
+@export var recarga_chama := 0.4
+@export var duracao_chama := 0.15
+@export var tempo_invulneravel := 1.0
+
 # Capacidades: as ofertas do corpo (P3) desligam algumas destas.
 var pode_agarrar := true
-var pode_correr := true
 var pode_pular := true
 # O corpo: o que ainda não foi ofertado.
 var tem_trancas := true
 var tem_mao := true
+## Vela da irmandade: a chama derrete a cera velha.
+var vela_forte := false
+var vida := 3
 
 ## Usado para achar a corda (tranças) no mapa.
 var nivel: Nivel
@@ -50,7 +63,6 @@ var carregando := false
 var ajoelhada := false
 var pendurada := false
 var na_corda := false
-var correndo := false
 var pulos_fortes := 0
 ## Enquanto > 0, a subida não é cortada ao soltar o botão (impulso ao passar por um buraco no teto).
 var impulso := 0.0
@@ -68,6 +80,10 @@ var _subindo := false
 var _tween: Tween
 var _parede_x := 0.0
 var _borda_y := 0.0
+var _recarga := 0.0
+var _golpe := 0.0
+var _invulneravel := 0.0
+var _empurrao := 0.0
 var _forma := CollisionShape2D.new()
 var _ret := RectangleShape2D.new()
 
@@ -91,11 +107,49 @@ func centro() -> Vector2:
 
 
 func raio_da_luz() -> float:
-	return raio_luz if luz_acesa else raio_sem_luz
+	if not luz_acesa:
+		return raio_sem_luz
+	# A chama encolhe com a vida.
+	return raio_luz * (0.55 + 0.45 * float(vida) / vida_max)
 
 
-func esta_correndo() -> bool:
-	return correndo and absf(velocity.x) > vel_andar + 5.0
+## Área que a chama atinge agora, em coordenadas do nível.
+func area_da_chama() -> Rect2:
+	var c := centro()
+	var x := global_position.x + direcao * (LARGURA * 0.5)
+	return Rect2(minf(x, x + direcao * alcance_chama), c.y - 32.0, alcance_chama, 64.0)
+
+
+func golpear() -> void:
+	if _recarga > 0.0 or not luz_acesa or carregando or pendurada or _subindo:
+		return
+	_recarga = recarga_chama
+	_golpe = duracao_chama
+	golpeou.emit(area_da_chama(), vela_forte)
+
+
+## Leva um golpe vindo de `origem`. Devolve false se estava protegida (logo depois de outro golpe).
+func receber_dano(origem: Vector2) -> bool:
+	if _invulneravel > 0.0 or vida <= 0:
+		return false
+	vida -= 1
+	_invulneravel = tempo_invulneravel
+	if pendurada:
+		_soltar()
+	if not (_subindo or na_corda):
+		var lado := signf(global_position.x - origem.x)
+		if lado == 0.0:
+			lado = -direcao
+		velocity = Vector2(lado * 380.0, -420.0)
+		_empurrao = 0.18
+	if vida <= 0:
+		apagou.emit()
+	return true
+
+
+func curar() -> void:
+	vida = vida_max
+	_invulneravel = 0.0
 
 
 func definir_luz(acesa: bool) -> void:
@@ -119,8 +173,14 @@ func _physics_process(delta: float) -> void:
 	_espera_agarrar -= delta
 	impulso -= delta
 	_espera_corda -= delta
+	_recarga -= delta
+	_golpe -= delta
+	_invulneravel -= delta
+	_empurrao -= delta
 	if controle_ativo and Input.is_action_just_pressed("luz"):
 		definir_luz(not luz_acesa)
+	if controle_ativo and Input.is_action_just_pressed("chama"):
+		golpear()
 	if _subindo:
 		return
 	if pendurada:
@@ -152,7 +212,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = minf(velocity.y + g * delta, queda_max)
 
 	var eixo := 0.0
-	if controle_ativo:
+	if controle_ativo and _empurrao <= 0.0:
 		eixo = Input.get_axis("mover_esquerda", "mover_direita")
 	if eixo != 0.0:
 		direcao = 1 if eixo > 0.0 else -1
@@ -164,16 +224,14 @@ func _physics_process(delta: float) -> void:
 	elif not quer_ajoelhar and ajoelhada and _cabe(global_position, ALTURA):
 		_definir_ajoelhada(false)
 
-	correndo = controle_ativo and pode_correr and not carregando and not ajoelhada \
-		and eixo != 0.0 and Input.is_action_pressed("correr")
 	var vel := vel_andar
 	if ajoelhada:
 		vel = vel_joelhos
 	elif carregando:
 		vel = vel_carregando
-	elif correndo:
-		vel = vel_correr
 	var acel := aceleracao if eixo != 0.0 else desaceleracao
+	if _empurrao > 0.0:
+		acel = 0.0  # o empurrão do golpe não é freado na hora
 	if not no_chao:
 		acel *= controle_no_ar
 	velocity.x = move_toward(velocity.x, eixo * vel, acel * delta)
@@ -190,6 +248,7 @@ func _physics_process(delta: float) -> void:
 			v = vel_pulo_forte
 			pulos_fortes -= 1
 		velocity.y = -v
+		pulou.emit(v == vel_pulo_forte)
 		_buffer = 0.0
 		_coyote = 0.0
 	# Pulo variável: soltar o botão cedo corta a subida.
@@ -359,6 +418,8 @@ func posicao_vela() -> Vector2:
 func _draw() -> void:
 	var h := altura_atual()
 	var cor := Color(0.07, 0.06, 0.06)
+	# Logo depois de um golpe, ela pisca.
+	modulate.a = 0.35 if _invulneravel > 0.0 and fmod(_invulneravel, 0.16) < 0.08 else 1.0
 	draw_rect(Rect2(-LARGURA * 0.5, -h, LARGURA, h), cor)
 	# Olho: mostra para onde ela olha.
 	draw_rect(Rect2(direcao * 5 - 3, -h + 9, 6, 5), Color(0.86, 0.82, 0.74))
@@ -375,7 +436,20 @@ func _draw() -> void:
 	var chama := posicao_vela()
 	draw_line(chama + Vector2(0, 16), chama + Vector2(0, 4), Nivel.COR_CERA, 5)
 	if luz_acesa:
-		draw_circle(chama, 4, Color(1.0, 0.78, 0.3))
+		# A vida aparece no tamanho da chama; com 1 de vida, ela treme.
+		var r := 2.0 + 2.5 * float(vida) / vida_max
+		if vida == 1:
+			r += sin(Time.get_ticks_msec() * 0.03) * 0.8
+		draw_circle(chama, r + 1.5, Color(1.0, 0.55, 0.15, 0.5))
+		draw_circle(chama, r, Color(1.0, 0.78, 0.3))
+	if _golpe > 0.0:
+		# O golpe de chama: uma língua de fogo à frente.
+		var a := area_da_chama()
+		var base := a.get_center() - global_position
+		var cor_fogo := Color(1.0, 0.9, 0.5) if vela_forte else Color(1.0, 0.7, 0.25)
+		for i in 3:
+			var p := base + Vector2(direcao * (i - 1) * 16.0, sin(i * 2.0 + Time.get_ticks_msec() * 0.05) * 6.0)
+			draw_circle(p, 16.0 - absf(i - 1) * 4.0, Color(cor_fogo, 0.75))
 	if carregando:
 		draw_rect(Rect2(-8, -h - 22, 16, 22), Nivel.COR_CERA)
 

@@ -37,7 +37,7 @@ const CATALOGO := {
 		"graca": {"tipo": "ativar", "grupo": "B"},
 		"graca_txt": "uma ponte de cera se forma",
 		"voto": {"tipo": "carregar"},
-		"voto_txt": "levar a vela até a moldura dourada sem cair de muito alto (sem correr, sem se agarrar)",
+		"voto_txt": "levar a vela até a moldura dourada sem cair de muito alto (sem se agarrar)",
 		"prazo_salas": 4,
 	},
 	"vela_dentro": {
@@ -56,12 +56,12 @@ const CATALOGO := {
 		"voto_txt": "chegar ao altar da Igreja da Irmandade, no Alto da Cruz",
 		"prazo_salas": 4,
 	},
-	"nao_correr": {
-		"texto": "Não corro até o fim da ladeira.",
+	"nao_pular": {
+		"texto": "Não pulo até a próxima igreja.",
 		"graca": {"tipo": "salto_forte", "usos": 1},
 		"graca_txt": "o próximo pulo vai muito mais alto",
-		"voto": {"tipo": "nao_correr", "salas": 2},
-		"voto_txt": "não correr nas próximas 2 salas",
+		"voto": {"tipo": "nao_pular", "salas": 2},
+		"voto_txt": "depois do salto da graça, não pular nas próximas 2 salas",
 		"prazo_salas": 0,
 	},
 }
@@ -85,6 +85,7 @@ var quebradas := 0
 
 func _ready() -> void:
 	jogadora.aterrissou.connect(_ao_aterrissar)
+	jogadora.pulou.connect(_ao_pular)
 
 
 ## Modo Mundo: cada sala nova em que ela entra conta uma sala para os prazos.
@@ -225,10 +226,7 @@ func _checar(p: Dictionary) -> void:
 			if _passadas(p) >= v["salas"] * fator:
 				_cumprir(p)
 				return
-		"nao_correr":
-			if jogadora.esta_correndo():
-				_falhar(p, "Você correu.")
-				return
+		"nao_pular":
 			if _passadas(p) >= v["salas"] * fator:
 				_cumprir(p)
 				return
@@ -243,6 +241,15 @@ func _checar(p: Dictionary) -> void:
 	var prazo: int = p["def"]["prazo_salas"] * fator
 	if prazo > 0 and _passadas(p) >= prazo:
 		_falhar(p, "O prazo acabou.")
+
+
+## O salto forte da graça não conta; qualquer outro pulo quebra o voto de não pular.
+func _ao_pular(forte: bool) -> void:
+	if forte:
+		return
+	for p in abertas.duplicate():
+		if p["def"]["voto"]["tipo"] == "nao_pular":
+			_falhar(p, "Você pulou.")
 
 
 func _ao_aterrissar(altura_queda: float) -> void:

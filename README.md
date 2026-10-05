@@ -24,7 +24,7 @@ O jogo **começa no Mundo**: as 60 salas da Cidade das Ladeiras, ligadas pelo ma
 
 **Salas:** cada uma é um arquivo em `niveis/salas/` (ex.: `C1-01.txt`), no mesmo formato dos mapas de texto. Para criar as salas novas da planilha `mundo/salas.csv`, dê duplo clique em **`gerar_salas.bat`**: ele faz um greybox inicial com as aberturas certas e **nunca sobrescreve** uma sala que já existe.
 
-**Conferir uma sala depois de editar:** `checar_salas.bat` simula o movimento (pulo de 2 tiles, distância 3/5, escadas, joelhos, agarrar) e avisa se alguma passagem ficou inalcançável. Ex.: `checar_salas.bat C1-05 --sem-agarrar`. É aproximado: serve para achar bloqueios, não substitui jogar.
+**Conferir uma sala depois de editar:** `checar_salas.bat` simula o movimento (medidas à *Hollow Knight*: pulo de 4 tiles, distância 6, escadas, joelhos, agarrar) e avisa se alguma passagem ficou inalcançável. Ex.: `checar_salas.bat C1-05 --sem-agarrar`. Opções: `--corda` (depois das tranças) e `--irmandade` (a vela da irmandade derrete a cera velha). É aproximado: serve para achar bloqueios, não substitui jogar.
 
 **Já blocadas (percurso principal):** C1-01 a C1-08, C2-06 a C2-11, C4-01, C4-02, C4-07, C4-08. As outras salas ainda são o greybox gerado.
 
@@ -35,7 +35,7 @@ O jogo **começa no Mundo**: as 60 salas da Cidade das Ladeiras, ligadas pelo ma
 | Ação | Teclado | Controle |
 |---|---|---|
 | Andar | A / D ou ← / → | Analógico esquerdo / direcional |
-| Correr | Shift | RB |
+| **Golpe de chama** | J ou X | B |
 | Pular / subir na borda | Espaço, W ou ↑ | A |
 | Ajoelhar (segurar) / soltar a borda | S ou ↓ | ↓ |
 | Rezar / ofertar no altar | E | X |
@@ -50,9 +50,21 @@ O jogo **começa no Mundo**: as 60 salas da Cidade das Ladeiras, ligadas pelo ma
 
 **Agarrar bordas:** no ar, perto de uma borda, segure a direção dela. Para subir, aperte pular.
 
+## Combate de sobrevivência (P5, em andamento)
+
+Regras em `Game Design/biblia/04-sistemas.md` (4.4).
+
+- **A vela é a arma:** o golpe de chama (J) derrete as criaturas de cera e a **cera fina** das paredes. Com a vela apagada (Q), não há chama.
+- **A vida aparece na chama:** 3 de vida; a cada golpe recebido, a chama (e a luz) encolhe. Com 1, ela treme. Cravos e abismos também tiram 1.
+- **Vida zero:** a vela se apaga e ela acorda no último altar. Descansar num altar cura e reforma as criaturas da sala.
+- **As criaturas se reformam:** a poça de cera volta a ser criatura depois de 20–40 s. Só pagar resolve de vez.
+- **Cera:** cada criatura derretida solta cera (uma vez por descanso). O total aparece no canto quando muda.
+- **A vela da irmandade** (dada no altar da Igreja da Irmandade, C5-05) derrete a **cera velha**: o Muro do Adro (C2-12), o Nicho do Passo (C2-05) e o Batistério (C4-03).
+- **Criaturas na Cidade:** uma mãozinha na Ladeira do Meio (C2-07) e um ajoelhado no Passo da Ladeira (C2-09).
+
 ## Fases
 
-- **P1 — Movimento e escala.** Degraus, buracos (o maior exige correr), uma parede para agarrar, um túnel de joelhos e um salão alto com câmera aberta.
+- **P1 — Movimento e escala.** Degraus, buracos (o maior exige o pulo inteiro), uma parede para agarrar, um túnel de joelhos e um salão alto com câmera aberta.
   - *Pergunta:* mover é gostoso? A câmera aberta faz ela parecer pequena?
 - **P2 — Promessas.** Fase escura com 5 salas. Cada obstáculo tem três saídas: uma promessa, outra promessa ou um caminho difícil sem prometer. Promessa quebrada gera uma criatura de cera que persegue a protagonista. Os altares 3 e 4 permitem pagar a dívida atrasada.
   - *Perguntas:* prometer gera tensão? As pessoas aceitam promessas? Falhar dá culpa ou só irritação?
@@ -87,4 +99,4 @@ niveis/              mapas das fases (veja niveis/LEIA-ME.md)
 
 ## Ajustar a sensação do movimento
 
-Os valores ficam no topo de `src/protagonista.gd`: `vel_andar`, `vel_correr`, `vel_pulo`, `gravidade`, `alcance_agarrar` etc. Mude um por vez e jogue de novo. Anote no diário de playtest o que melhorou.
+Os valores ficam no topo de `src/protagonista.gd`: `vel_andar`, `vel_pulo`, `vida_max`, `alcance_chama`, `gravidade`, `alcance_agarrar` etc. Mude um por vez e jogue de novo. Anote no diário de playtest o que melhorou.

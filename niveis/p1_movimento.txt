@@ -1,5 +1,5 @@
 @nome P1 — Movimento e escala
-@dica A/D andar · Shift correr · Espaço pular · segure S para ajoelhar · no ar, segure a direção contra uma borda para se agarrar
+@dica A/D andar · Espaço pular (segure para ir mais alto) · J golpe de chama · segure S para ajoelhar · no ar, segure a direção contra uma borda para se agarrar
 ;; Pergunta: mover é gostoso? A câmera aberta (salão alto) faz ela parecer pequena?
 ;; Legenda em niveis/LEIA-ME.md
 ############################################################################################################################

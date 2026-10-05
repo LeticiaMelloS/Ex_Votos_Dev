@@ -15,6 +15,8 @@ var areas := {}  # codigo -> Dictionary
 var ligacoes: Array[Dictionary] = []
 var visitadas := {}  # codigo -> true
 var grupos := {}  # sala -> {letra: ativo}: portões e pontes que ficaram abertos
+var derretidas := {}  # sala -> ["x,y", ...]: paredes de cera já derretidas
+var cera := 0  # moeda: cera derretida das criaturas
 
 
 func carregar_dados() -> void:
@@ -122,6 +124,8 @@ func nome_da_area(codigo_sala: String) -> String:
 func salvar(estado: Dictionary) -> void:
 	estado["visitadas"] = visitadas.keys()
 	estado["grupos"] = grupos
+	estado["derretidas"] = derretidas
+	estado["cera"] = cera
 	var f := FileAccess.open(ARQUIVO_SAVE, FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(estado))
@@ -136,6 +140,8 @@ func carregar_save() -> Dictionary:
 	for c in dados.get("visitadas", []):
 		visitadas[c] = true
 	grupos = dados.get("grupos", {})
+	derretidas = dados.get("derretidas", {})
+	cera = int(dados.get("cera", 0))
 	return dados
 
 
@@ -144,3 +150,5 @@ func apagar_save() -> void:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(ARQUIVO_SAVE))
 	visitadas.clear()
 	grupos.clear()
+	derretidas.clear()
+	cera = 0

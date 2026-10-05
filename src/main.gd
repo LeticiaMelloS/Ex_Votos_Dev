@@ -3,6 +3,7 @@ extends Node2D
 ## Começa no modo Mundo (as salas da Cidade, ligadas pelo mapa em mundo/).
 ## F6 volta ao Mundo · F8 recomeça o Mundo do zero · M mostra o mapa
 ## F1–F4 abrem os protótipos · R reinicia · Tab debug · F12 captura a tela. Ver README.md.
+## Combate de sobrevivência (P5): J/X golpe de chama; criaturas de cera e paredes de cera.
 
 const NIVEIS := [
 	"res://niveis/p1_movimento.txt",
@@ -43,6 +44,10 @@ var _trava_transicao := 0.0
 ## Último chão seguro (perigos como os cravos devolvem a protagonista para cá, como em Hollow Knight).
 var _chao_seguro := Vector2.ZERO
 var _chao_seguro_sala := ""
+## Criaturas de cera da sala atual (as da dívida ficam em promessas.criaturas).
+var _criaturas_sala: Array[CriaturaCera] = []
+## Cera juntada nos protótipos (no Mundo, fica em mundo.cera).
+var _cera_prototipo := 0
 
 
 func _ready() -> void:
@@ -83,6 +88,8 @@ func _montar(caminho: String) -> bool:
 	jogadora = Protagonista.new()
 	jogadora.nivel = nivel
 	add_child(jogadora)
+	jogadora.golpeou.connect(_ao_golpear)
+	jogadora.apagou.connect(_ao_apagar)
 	respawn = nivel.pe_da_celula(nivel.inicio)
 	jogadora.reiniciar_em(respawn)
 	if nivel.meta.has("sem_trancas"):
@@ -110,7 +117,22 @@ func _montar(caminho: String) -> bool:
 	oferendas.jogadora = jogadora
 	oferendas.mensagem.connect(hud.mostrar_mensagem)
 	add_child(oferendas)
+	_criar_criaturas()
 	return true
+
+
+## Criaturas de cera do mapa ("&"). Vivem na camada de brilho, que é trocada junto com a sala.
+func _criar_criaturas() -> void:
+	_criaturas_sala.clear()
+	for d in nivel.criaturas_mapa:
+		var c := CriaturaCera.new()
+		c.tipo = String(d["texto"]).strip_edges()
+		c.nivel = nivel
+		c.alvo = jogadora
+		c.preparar(d["celula"])
+		c.soltou_cera.connect(_ganhar_cera)
+		nivel.brilho.add_child(c)
+		_criaturas_sala.append(c)
 
 
 func carregar_nivel(i: int) -> void:
@@ -187,6 +209,7 @@ func iniciar_mundo(do_zero := false) -> void:
 		jogadora.tem_trancas = save.get("trancas", true)
 		jogadora.tem_mao = save.get("mao", true)
 		jogadora.pode_agarrar = jogadora.tem_mao
+		jogadora.vela_forte = save.get("vela_forte", false)
 		jogadora.reiniciar_em(Vector2(save["x"], save["y"]))
 		_ajustar_camera(true)
 	respawn = jogadora.global_position
@@ -210,6 +233,7 @@ func _trocar_sala(codigo: String, ponto_mundo: Vector2) -> void:
 	move_child(nivel, 0)
 	nivel.carregar(mundo.arquivo(codigo))
 	_camada_brilho.add_child(nivel.brilho)
+	_criar_criaturas()
 	jogadora.nivel = nivel
 	promessas.nivel = nivel
 	oferendas.nivel = nivel
@@ -241,6 +265,12 @@ func _ao_entrar_sala() -> void:
 	var g: Dictionary = mundo.grupos.get(sala_atual, {})
 	for letra in g:
 		nivel.ativar_grupo(letra, g[letra])
+	# Paredes de cera que já foram derretidas.
+	var ceras: Array[Vector2i] = []
+	for k in mundo.derretidas.get(sala_atual, []):
+		var xy := String(k).split(",")
+		ceras.append(Vector2i(int(xy[0]), int(xy[1])))
+	nivel.marcar_derretidas(ceras)
 	# O corpo vale em qualquer sala.
 	if not jogadora.tem_trancas:
 		nivel.ativar_grupo("K", true)
@@ -297,12 +327,34 @@ func _avisar(msg: String) -> void:
 	hud.mostrar_mensagem(msg, 3.5)
 
 
-## Descansar num altar: salva e vira o ponto de retorno.
-func _descansar() -> void:
+## Descansar num altar: cura, reforma as criaturas da sala, salva e vira o ponto de retorno.
+## Devolve true se a sala tinha um presente (ex.: a vela da irmandade) e ele foi dado agora.
+func _descansar() -> bool:
+	jogadora.curar()
+	for c in _criaturas_sala:
+		c.reformar()
+	var deu := _dar_presente()
 	respawn = nivel.pe_da_celula(Vector2i(nivel.coluna(jogadora.global_position), floori((jogadora.global_position.y - 10) / Nivel.TILE)))
 	respawn_sala = sala_atual
 	mundo.salvar({"sala": sala_atual, "x": respawn.x, "y": respawn.y,
-		"trancas": jogadora.tem_trancas, "mao": jogadora.tem_mao})
+		"trancas": jogadora.tem_trancas, "mao": jogadora.tem_mao, "vela_forte": jogadora.vela_forte})
+	return deu
+
+
+## "@presente vela_irmandade Texto": algo que a sala dá no primeiro descanso no altar.
+func _dar_presente() -> bool:
+	var partes := String(nivel.meta.get("presente", "")).split(" ", false, 1)
+	if partes.is_empty():
+		return false
+	match partes[0]:
+		"vela_irmandade":
+			if jogadora.vela_forte:
+				return false
+			jogadora.vela_forte = true
+		_:
+			return false
+	hud.mostrar_mensagem(partes[1] if partes.size() > 1 else "Você ganhou algo.", 8.0)
+	return true
 
 
 # ------------------------------------------------------------ laço
@@ -313,6 +365,9 @@ func _physics_process(delta: float) -> void:
 	_trava_transicao -= delta
 	promessas.processar()
 	oferendas.processar()
+	_checar_contato()
+	if jogadora == null:
+		return
 	if mundo:
 		var t := nivel.tamanho_px()
 		var p := jogadora.global_position
@@ -325,6 +380,9 @@ func _physics_process(delta: float) -> void:
 		_chao_seguro = jogadora.global_position
 		_chao_seguro_sala = sala_atual
 	if cel == "^" or pes == "^" or (mundo and (cel == "~" or pes == "~")):
+		# Cravos e abismos tiram 1 de vida; se a vela não se apagou, volta ao chão seguro.
+		if jogadora.receber_dano(jogadora.global_position) and jogadora.vida <= 0:
+			return
 		_voltar_ao_chao_seguro()
 		return
 	if cel == "C" or pes == "C":
@@ -380,8 +438,10 @@ func _process(delta: float) -> void:
 		hud.definir_dica("")
 
 	if hud.debug_visivel():
-		hud.definir_debug("FPS %d   Luz: %s   Pulos fortes: %d   Tranças: %s   Mão: %s%s\n%s" % [
+		hud.definir_debug("FPS %d   Vida: %d/%d   Cera: %d   Vela: %s   Luz: %s   Pulos fortes: %d   Tranças: %s   Mão: %s%s\n%s" % [
 			Engine.get_frames_per_second(),
+			jogadora.vida, jogadora.vida_max, _cera(),
+			"da irmandade" if jogadora.vela_forte else "de sebo",
 			"acesa" if jogadora.luz_acesa else "apagada",
 			jogadora.pulos_fortes,
 			"sim" if jogadora.tem_trancas else "ofertadas",
@@ -497,11 +557,15 @@ func _abrir_menu(altar: String) -> void:
 	if nivel.altares_oferta.has(altar):
 		_abrir_menu_oferta(altar)
 		return
+	var presente := false
 	if mundo:
-		_descansar()
+		presente = _descansar()
+	else:
+		jogadora.curar()
 	_menu_opcoes = promessas.opcoes_do_altar(altar)
 	if _menu_opcoes.is_empty():
-		hud.mostrar_mensagem("Você descansa. O caminho até aqui foi guardado." if mundo else "O altar está em silêncio.")
+		if not presente:
+			hud.mostrar_mensagem("Você descansa. O caminho até aqui foi guardado." if mundo else "O altar está em silêncio.")
 		return
 	if promessas.fita_cheia():
 		hud.mostrar_mensagem("A fita não tem mais nós. Pague uma promessa antes de fazer outra.")
@@ -574,8 +638,59 @@ func _voltar_ao_chao_seguro() -> void:
 
 
 func _ao_ser_pega() -> void:
-	hud.mostrar_mensagem("A dívida a alcançou.", 2.0)
+	if jogadora.receber_dano(jogadora.global_position) and jogadora.vida > 0:
+		hud.mostrar_mensagem("A dívida a alcançou.", 2.0)
+
+
+# ------------------------------------------------------------ combate (P5)
+
+## A chama acertou uma área: criaturas, criaturas da dívida e paredes de cera.
+func _ao_golpear(area: Rect2, forte: bool) -> void:
+	for c in _criaturas_sala:
+		if c.ativa() and area.intersects(c.retangulo()):
+			c.ferir(jogadora.direcao)
+	for c in promessas.criaturas:
+		if area.grow(16.0).has_point(c.global_position):
+			c.derreter_por_um_tempo()
+	var r := nivel.derreter(area, forte)
+	if not r["derretidas"].is_empty() and mundo:
+		if not mundo.derretidas.has(sala_atual):
+			mundo.derretidas[sala_atual] = []
+		for cel in r["derretidas"]:
+			mundo.derretidas[sala_atual].append("%d,%d" % [cel.x, cel.y])
+	elif r["resistiu"]:
+		_avisar("Esta cera é velha e dura. A sua vela não dá conta dela.")
+
+
+## Encostar numa criatura de cera tira 1 de vida.
+func _checar_contato() -> void:
+	var h := jogadora.altura_atual()
+	var corpo := Rect2(jogadora.global_position - Vector2(Protagonista.LARGURA * 0.5, h), Vector2(Protagonista.LARGURA, h))
+	for c in _criaturas_sala:
+		if c.ativa() and corpo.intersects(c.retangulo().grow(-3.0)):
+			jogadora.receber_dano(c.global_position)
+			return
+
+
+## A vida chegou a zero: a vela se apaga e ela acorda no último altar, sem outro custo.
+func _ao_apagar() -> void:
+	hud.mostrar_mensagem("A vela se apagou.", 3.0)
 	_renascer()
+	jogadora.curar()
+	for c in _criaturas_sala:
+		c.reformar()
+
+
+func _ganhar_cera(n: int) -> void:
+	if mundo:
+		mundo.cera += n
+	else:
+		_cera_prototipo += n
+	hud.mostrar_cera(_cera())
+
+
+func _cera() -> int:
+	return mundo.cera if mundo else _cera_prototipo
 
 
 func _renascer() -> void:

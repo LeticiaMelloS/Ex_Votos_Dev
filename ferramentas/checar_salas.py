@@ -7,11 +7,12 @@ Simula, numa grade de tiles, o que a protagonista consegue fazer
     5 subindo até 3, 4 subindo 4;
   - cair de qualquer altura; cravos (^) não são chão;
   - escadas (L) e, com --corda, cordas (K);
-  - agarrar bordas de 5 a 6 tiles acima (--sem-agarrar desliga).
+  - agarrar bordas de 5 a 6 tiles acima (--sem-agarrar desliga);
+  - cera fina (w) sempre derrete; cera velha (W) só com --irmandade (a vela da irmandade).
 Para cada sala, diz quais passagens (bordas abertas) NÃO são alcançáveis a partir de cada entrada.
 É uma aproximação: serve para achar bloqueios, não substitui jogar.
 
-Uso: python ferramentas/checar_salas.py [CÓDIGO ...] [--sem-agarrar] [--corda]
+Uso: python ferramentas/checar_salas.py [CÓDIGO ...] [--sem-agarrar] [--corda] [--irmandade]
 """
 import io
 import os
@@ -19,7 +20,7 @@ import sys
 from collections import deque
 
 PASTA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "niveis", "salas")
-SOLIDO = set("#DF")
+SOLIDO = set("#DFW")
 
 
 def ler(cod):
@@ -30,8 +31,9 @@ def ler(cod):
 
 
 class Sala:
-    def __init__(self, cod, agarrar=True, corda=False):
+    def __init__(self, cod, agarrar=True, corda=False, irmandade=False):
         self.cod, self.g = cod, ler(cod)
+        self.solidos = SOLIDO - {"W"} if irmandade else SOLIDO
         self.H, self.W = len(self.g), len(self.g[0])
         self.agarrar, self.corda = agarrar, corda
 
@@ -41,7 +43,7 @@ class Sala:
         return self.g[y][x]
 
     def solido(self, x, y):
-        return self.c(x, y) in SOLIDO
+        return self.c(x, y) in self.solidos
 
     def livre(self, x, y):
         return not self.solido(x, y)
@@ -168,8 +170,8 @@ class Sala:
         return saidas
 
 
-def checar(cod, agarrar, corda):
-    s = Sala(cod, agarrar, corda)
+def checar(cod, agarrar, corda, irmandade=False):
+    s = Sala(cod, agarrar, corda, irmandade)
     mapa = s.passagens()
     grupos = {}
     for cel, nome in mapa.items():
@@ -196,15 +198,16 @@ def main():
     cods = [a for a in sys.argv[1:] if not a.startswith("--")]
     agarrar = "--sem-agarrar" not in sys.argv
     corda = "--corda" in sys.argv
+    irmandade = "--irmandade" in sys.argv
     cods = cods or sorted(f[:-4] for f in os.listdir(PASTA) if f.endswith(".txt"))
     com_problema = 0
     for cod in cods:
-        n, probs = checar(cod, agarrar, corda)
+        n, probs = checar(cod, agarrar, corda, irmandade)
         print(f"{cod}: {'ok' if not probs else 'atenção'} ({n} passagens)")
         for p in probs:
             print(p)
         com_problema += 1 if probs else 0
-    print(f"\n{len(cods)} sala(s), {com_problema} com atenção. (agarrar={'sim' if agarrar else 'não'}, corda={'sim' if corda else 'não'})")
+    print(f"\n{len(cods)} sala(s), {com_problema} com atenção. (agarrar={'sim' if agarrar else 'não'}, corda={'sim' if corda else 'não'}, vela da irmandade={'sim' if irmandade else 'não'})")
 
 
 if __name__ == "__main__":
