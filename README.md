@@ -1,6 +1,6 @@
 # Ex-Voto — protótipos
 
-Protótipos em **greybox** (retângulos, sem arte) para responder às perguntas da seção 7.6 do documento de conceito. Documentos de design: `OneDrive/Documentos/Game Design/`.
+Protótipos em **greybox** (retângulos, sem arte) para responder às perguntas da bíblia de design (`biblia/04-sistemas.md`, 4.12). Documentos de design: `OneDrive/Documentos/Game Design/biblia/`.
 
 ## Como abrir
 
@@ -61,7 +61,7 @@ O jogo **começa no Mundo**: as 60 salas da Cidade das Ladeiras, ligadas pelo ma
   - Uma borda para agarrar: a última vez que ela consegue.
   - Um fosso de onde só se sai ofertando a **mão**: ela perde o agarrar (e não pode mais fazer a promessa de carregar), mas as mãozinhas de cera da parede se abrem como apoio quando ela chega perto.
   - *Pergunta:* perder uma capacidade parece significativo ou só frustrante?
-- **Sala dos Milagres (F4): greybox da fatia vertical.** Os sete espaços do roteiro de 15 minutos (`Game Design/design/sala-dos-milagres-mapa.md`), juntando tudo:
+- **Sala dos Milagres (F4): greybox da fatia vertical.** Os sete espaços do roteiro de 15 minutos (hoje distribuídos pelas áreas M1–M5 de `Game Design/biblia/regioes/2-sala-dos-milagres.md`), juntando tudo:
   - os 10 bilhetes de graça e a fala da benzedeira;
   - a promessa-tutorial da vela e o altar de escolha (joelhos, sem luz ou túnel);
   - a escadaria, a oferta da mão, a parede de mãos e a revelação final.

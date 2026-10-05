@@ -3,7 +3,7 @@ extends Node
 ## Sistema de promessas (pagar a prazo).
 ## Uma promessa = graça (efeito agora) + voto (condição depois) + prazo (em salas).
 ## No máximo 3 abertas: os três nós da fita.
-## Documentação de design: Game Design/design/catalogo-de-promessas.md
+## Documentação de design: Game Design/biblia/04-sistemas.md (4.1)
 
 signal mensagem(texto: String)
 

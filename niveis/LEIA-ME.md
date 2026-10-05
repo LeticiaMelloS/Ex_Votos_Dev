@@ -2,7 +2,7 @@
 
 Cada fase é um arquivo de texto. **Cada caractere é um tile de 40×40 px.** Dá para editar no Bloco de Notas: salve e aperte **R** no jogo para recarregar.
 
-A protagonista tem ~1,75 tile de altura. **Movimento à *Hollow Knight*:** pula até ~4,5 tiles (segurando o botão; um toque rápido dá ~1 tile), ~6 tiles de distância, e agarrando a borda alcança ~7 tiles. Ajoelhada, ocupa menos de 1 tile. Medidas de design (com folga) em `Game Design/design/level-design/guia-de-level-design.md`.
+A protagonista tem ~1,75 tile de altura. **Movimento à *Hollow Knight*:** pula até ~4,5 tiles (segurando o botão; um toque rápido dá ~1 tile), ~6 tiles de distância, e agarrando a borda alcança ~7 tiles. Ajoelhada, ocupa menos de 1 tile. Medidas de design (com folga) em `Game Design/biblia/08-regras-de-construcao.md`.
 
 ## Cabeçalho
 

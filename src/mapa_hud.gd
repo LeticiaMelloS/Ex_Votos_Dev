@@ -2,7 +2,7 @@ class_name MapaHud
 extends Control
 ## Mapa das salas visitadas (tecla M, no modo Mundo).
 ## Provisório: na versão final, o mapa de cada área vem do riscador de milagres
-## e se atualiza nos altares (design/level-design/areas.md, 2.4).
+## e se atualiza nos altares (biblia/04-sistemas.md, 4.8).
 
 const CORES := {
 	"Cidade das Ladeiras": Color("#C9A227"),
