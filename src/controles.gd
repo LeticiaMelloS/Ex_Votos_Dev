@@ -8,6 +8,7 @@ static func registrar() -> void:
 	_acao("pular", [KEY_SPACE, KEY_W, KEY_UP], [JOY_BUTTON_A])
 	_acao("ajoelhar", [KEY_S, KEY_DOWN], [JOY_BUTTON_DPAD_DOWN])
 	_acao("chama", [KEY_J, KEY_X], [JOY_BUTTON_B])
+	_acao("matraca", [KEY_F], [JOY_BUTTON_RIGHT_SHOULDER])
 	_acao("interagir", [KEY_E], [JOY_BUTTON_X])
 	_acao("luz", [KEY_Q], [JOY_BUTTON_Y])
 	_acao("reiniciar", [KEY_R], [JOY_BUTTON_BACK])

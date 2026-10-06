@@ -16,8 +16,9 @@ A protagonista tem ~1,75 tile de altura. **Movimento à *Hollow Knight*:** pula 
 | `@sem_trancas` | A protagonista começa sem as tranças |
 | `@fim Texto` | Mensagem ao chegar no `G` |
 | `@bilhete Texto` / `@fala Texto` | Textos dos `?` e `!` (uma linha cada) |
-| `@criatura tipo` | Tipo de cada `&`, da esquerda para a direita: `maozinha` ou `ajoelhado` |
+| `@criatura tipo` | Tipo de cada `&`, da esquerda para a direita: `maozinha`, `ajoelhado` ou `anjinho` |
 | `@presente vela_irmandade Texto` | O que a sala dá no primeiro descanso no altar |
+| `@objeto matraca Texto` | Objeto de cada `%`, da esquerda para a direita (pegar é só encostar) |
 | `@tutorial Texto` | Mensagem mostrada só na primeira visita (Mundo) |
 | `;; texto` | Comentário (ignorado) |
 
@@ -51,6 +52,7 @@ Promessas disponíveis: `joelhos`, `sem_luz`, `carregar`, `nao_pular`, `vela_den
 | `w` | Cera fina: qualquer chama derrete (a cera de cima escorre junto) |
 | `W` | Cera velha: só a vela da irmandade derrete. Use para segredos e atalhos |
 | `&` | Criatura de cera (tipo na linha `@criatura`). Mãozinha com teto logo acima começa pendurada nele |
+| `%` | Objeto para pegar (linha `@objeto`) |
 | `?` | Bilhete de graça. Os textos vêm das linhas `@bilhete`, na ordem da esquerda para a direita |
 | `!` | NPC que fala sozinha ao se aproximar. Textos nas linhas `@fala`, na mesma ordem |
 

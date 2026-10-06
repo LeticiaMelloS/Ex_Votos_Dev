@@ -17,6 +17,8 @@ var visitadas := {}  # codigo -> true
 var grupos := {}  # sala -> {letra: ativo}: portões e pontes que ficaram abertos
 var derretidas := {}  # sala -> ["x,y", ...]: paredes de cera já derretidas
 var cera := 0  # moeda: cera derretida das criaturas
+## Estado da história: "andor" (vagando, bloqueando, resolvido), "fuga" (encontro 2 já aconteceu)…
+var marcos := {}
 
 
 func carregar_dados() -> void:
@@ -126,6 +128,7 @@ func salvar(estado: Dictionary) -> void:
 	estado["grupos"] = grupos
 	estado["derretidas"] = derretidas
 	estado["cera"] = cera
+	estado["marcos"] = marcos
 	var f := FileAccess.open(ARQUIVO_SAVE, FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(estado))
@@ -142,6 +145,7 @@ func carregar_save() -> Dictionary:
 	grupos = dados.get("grupos", {})
 	derretidas = dados.get("derretidas", {})
 	cera = int(dados.get("cera", 0))
+	marcos = dados.get("marcos", {})
 	return dados
 
 
@@ -152,3 +156,4 @@ func apagar_save() -> void:
 	grupos.clear()
 	derretidas.clear()
 	cera = 0
+	marcos.clear()

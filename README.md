@@ -36,6 +36,7 @@ O jogo **começa no Mundo**: as 60 salas da Cidade das Ladeiras, ligadas pelo ma
 |---|---|---|
 | Andar | A / D ou ← / → | Analógico esquerdo / direcional |
 | **Golpe de chama** | J ou X | B |
+| Tocar a matraca (depois de achá-la) | F | RB |
 | Pular / subir na borda | Espaço, W ou ↑ | A |
 | Ajoelhar (segurar) / soltar a borda | S ou ↓ | ↓ |
 | Rezar / ofertar no altar | E | X |
@@ -60,7 +61,15 @@ Regras em `Game Design/biblia/04-sistemas.md` (4.4).
 - **As criaturas se reformam:** a poça de cera volta a ser criatura depois de 20–40 s. Só pagar resolve de vez.
 - **Cera:** cada criatura derretida solta cera (uma vez por descanso). O total aparece no canto quando muda.
 - **A vela da irmandade** (dada no altar da Igreja da Irmandade, C5-05) derrete a **cera velha**: o Muro do Adro (C2-12), o Nicho do Passo (C2-05) e o Batistério (C4-03).
-- **Criaturas na Cidade:** uma mãozinha na Ladeira do Meio (C2-07) e um ajoelhado no Passo da Ladeira (C2-09).
+- **Criaturas na Cidade:** uma mãozinha na Ladeira do Meio (C2-07) e um ajoelhado no Passo da Ladeira (C2-09); anjinhos de procissão no cortejo.
+- **A matraca** fica no Passo da Ladeira (C2-09). F faz barulho: as mãozinhas do teto se assustam e caem.
+
+### O Andor Vazio (os quatro encontros)
+
+1. **Avistamento:** na Varanda dos Vizinhos (C1-08), ele passa ao longe.
+2. **Fuga:** na primeira vez na Ladeira do Meio (C2-07), as matracas avisam e o cortejo desce a rua. Saia pelas escadas das sacadas, ou **passe por baixo dos varais, ajoelhada**. Ele empurra e machuca, mas não mata de uma vez.
+3. **Bloqueio:** depois de ganhar a vela da irmandade, ele para no Largo do Alto (C2-13). O caminho de volta é pela Torre do Relógio (C2-15) e pelo Muro do Adro (C2-12), derretendo a cera velha.
+4. **Resolução:** sem as tranças (oferta na Capela das Tranças, C4-08), volte ao Largo do Alto e aperte E perto do andor para **amarrar a corda**. Ele segue você, de sala em sala, enquanto anjinhos descem contra; leve-o até a Nave Dourada (C4-02). A procissão termina, e a **porteira** (C2-01, Sertão) e a **cripta** (C4-04, Sala dos Milagres) se abrem. Se a vela se apagar no caminho, a corda escapa e ele volta ao Largo.
 
 ## Fases
 

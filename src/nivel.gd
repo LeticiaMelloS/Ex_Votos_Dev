@@ -32,6 +32,10 @@ var bilhetes: Array[Dictionary] = []  # {"celula": Vector2i, "texto": String}
 var falas: Array[Dictionary] = []
 ## Criaturas de cera do mapa ("&"), com o tipo vindo das linhas "@criatura", da esquerda para a direita.
 var criaturas_mapa: Array[Dictionary] = []  # {"celula": Vector2i, "texto": tipo}
+## Objetos para pegar ("%"), com o id e o texto da linha "@objeto id Texto".
+var objetos: Array[Dictionary] = []  # {"celula": Vector2i, "texto": "id Texto"}
+## Ids dos objetos que ela já tem (não aparecem mais).
+var objetos_pegos: Array[String] = []
 var oferendas: Array[String] = []  # altares de oferta já usados
 var ex_votos: Array[Vector2] = []  # marcas de promessas cumpridas
 var mostrar_debug := false:
@@ -90,6 +94,7 @@ func carregar(caminho: String) -> bool:
 	_ligar_textos("?", "bilhete", bilhetes)
 	_ligar_textos("!", "fala", falas)
 	_ligar_textos("&", "criatura", criaturas_mapa)
+	_ligar_textos("%", "objeto", objetos)
 	brilho.draw.connect(_desenhar_brilho)
 	return true
 
@@ -106,7 +111,7 @@ func _ler_meta(l: String) -> void:
 			meta["escuro"] = float(partes[1]) if partes.size() > 1 else 0.85
 		"altar":
 			meta["altar_" + partes[1]] = Array(partes.slice(2))
-		"bilhete", "fala", "criatura":
+		"bilhete", "fala", "criatura", "objeto":
 			if not meta.has(partes[0]):
 				meta[partes[0]] = []
 			meta[partes[0]].append(resto)
@@ -271,6 +276,15 @@ func celula(pos: Vector2) -> String:
 	return grade[y][x]
 
 
+## Altura (em px) do chão na coluna de `x`, procurando a partir de 3 tiles acima de `perto_de_y`.
+func chao_em(x: float, perto_de_y: float) -> float:
+	var col := clampi(floori(x / TILE), 0, largura - 1)
+	for lin in range(maxi(floori(perto_de_y / TILE) - 3, 1), altura):
+		if "#DFwW".contains(grade[lin][col]) and not "#DFwW".contains(grade[lin - 1][col]):
+			return lin * TILE
+	return perto_de_y
+
+
 func coluna(pos: Vector2) -> int:
 	return floori(pos.x / TILE)
 
@@ -369,6 +383,8 @@ func _desenhar_brilho() -> void:
 				brilho.draw_rect(r.grow(-6), COR_OURO, false, 3)
 			elif c == "M":
 				_desenhar_mao(r, _maos_ativas.has(Vector2i(x, y)))
+			elif c == "%":
+				_desenhar_objeto(r, Vector2i(x, y))
 			elif (c == "w" or c == "W") and not _derretidas.has(Vector2i(x, y)):
 				# Cera fina: clara e lisa. Cera velha: âmbar escuro, em camadas escorridas.
 				var cor_cera := COR_CERA if c == "w" else COR_CERA_VELHA
@@ -397,6 +413,25 @@ func _desenhar_brilho() -> void:
 		# Ex-voto de agradecimento: uma mãozinha de cera pendurada.
 		brilho.draw_line(p + Vector2(0, -95), p + Vector2(0, -80), COR_CERA, 1)
 		brilho.draw_rect(Rect2(p + Vector2(-6, -80), Vector2(12, 16)), COR_CERA)
+
+
+## Id do objeto ("%") nesta célula, ou "".
+func objeto_em(cel: Vector2i) -> String:
+	for o in objetos:
+		if o["celula"] == cel:
+			return String(o["texto"]).split(" ", false)[0] if String(o["texto"]) != "" else ""
+	return ""
+
+
+func _desenhar_objeto(r: Rect2, cel: Vector2i) -> void:
+	if objetos_pegos.has(objeto_em(cel)):
+		return
+	# Por enquanto, todo objeto é desenhado como uma matraca: tábua com o martelo.
+	var c := r.get_center() + Vector2(0, 6)
+	brilho.draw_rect(Rect2(c.x - 9, c.y - 6, 18, 14), COR_PORTAO)
+	brilho.draw_line(c + Vector2(0, 8), c + Vector2(0, 18), COR_PORTAO, 3)
+	brilho.draw_rect(Rect2(c.x - 11, c.y - 9, 4, 8), COR_OURO)
+	brilho.draw_arc(c, 18, 0, TAU, 20, Color(COR_OURO, 0.5), 2)
 
 
 ## Mãozinha de cera: fechada contra a parede, ou aberta como apoio.

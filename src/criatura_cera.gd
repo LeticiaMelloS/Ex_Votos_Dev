@@ -5,6 +5,7 @@ extends CharacterBody2D
 ## A origem do nó fica nos pés (ou, no teto, no ponto mais baixo da criatura).
 ##   mãozinha  — anda pelo teto e cai quando a protagonista passa embaixo; no chão, rasteja atrás dela.
 ##   ajoelhado — rasteja devagar e sem parar; cabe nos túneis de 1 tile; vira nas beiradas.
+##   anjinho   — criança de cera vestida de anjo: segue o cortejo numa direção só e empurra quem está no caminho.
 
 ## Derreteu e soltou cera (uma vez por descanso).
 signal soltou_cera(quantidade: int)
@@ -12,6 +13,7 @@ signal soltou_cera(quantidade: int)
 const TIPOS := {
 	"maozinha": {"vida": 1, "vel": 75.0, "tam": Vector2(26, 20), "cera": 2},
 	"ajoelhado": {"vida": 2, "vel": 55.0, "tam": Vector2(30, 32), "cera": 3},
+	"anjinho": {"vida": 3, "vel": 95.0, "tam": Vector2(26, 44), "cera": 3},
 }
 const GRAVIDADE := 2200.0
 const VISTA := 8 * Nivel.TILE  # distância em que ela percebe a protagonista
@@ -21,6 +23,8 @@ var alvo: Protagonista
 var nivel: Nivel
 var vida := 1
 var poca := false
+## Direção inicial (0 = escolhe sozinha). O anjinho nunca muda de direção, só nas paredes.
+var dir_inicial := 0
 
 var _dir := 1
 var _no_teto := false
@@ -37,7 +41,7 @@ func preparar(cel: Vector2i) -> void:
 	if not TIPOS.has(tipo):
 		tipo = "maozinha"
 	vida = TIPOS[tipo]["vida"]
-	_dir = 1 if (cel.x + cel.y) % 2 == 0 else -1
+	_dir = dir_inicial if dir_inicial != 0 else (1 if (cel.x + cel.y) % 2 == 0 else -1)
 	var tam: Vector2 = TIPOS[tipo]["tam"]
 	if tipo == "maozinha" and _solido_cel(cel + Vector2i(0, -1)):
 		_no_teto = true
@@ -91,6 +95,12 @@ func _derreter() -> void:
 		soltou_cera.emit(TIPOS[tipo]["cera"])
 
 
+## Ouviu um barulho forte (a matraca) em `p`: a mãozinha do teto se assusta e cai.
+func ouvir(p: Vector2) -> void:
+	if _no_teto and not poca and p.distance_to(global_position) < 10 * Nivel.TILE:
+		_cair()
+
+
 ## Descanso no altar: tudo se reforma, e volta a soltar cera.
 func reformar() -> void:
 	_ja_soltou = false
@@ -122,14 +132,14 @@ func _physics_process(delta: float) -> void:
 	velocity.y = minf(velocity.y + GRAVIDADE * delta, 900.0)
 	var vel: float = TIPOS[tipo]["vel"]
 	var dif := alvo.global_position - global_position if alvo else Vector2(9999, 0)
-	if absf(dif.x) < VISTA and absf(dif.y) < 3 * Nivel.TILE and absf(dif.x) > 4.0:
+	if tipo != "anjinho" and absf(dif.x) < VISTA and absf(dif.y) < 3 * Nivel.TILE and absf(dif.x) > 4.0:
 		_dir = 1 if dif.x > 0.0 else -1
 	if is_on_floor():
 		# Vira na parede e na beirada (é previsível: quem observa, desvia).
 		var meio: float = TIPOS[tipo]["tam"].x * 0.5 + 4.0
 		var frente := global_position + Vector2(_dir * meio, -10.0)
 		var abaixo := global_position + Vector2(_dir * meio, 8.0)
-		if _solido(frente) or not _solido(abaixo):
+		if _solido(frente) or (not _solido(abaixo) and tipo != "anjinho"):
 			_dir = -_dir
 		velocity.x = move_toward(velocity.x, _dir * vel, 1200.0 * delta)
 	move_and_slide()
@@ -207,6 +217,14 @@ func _draw() -> void:
 					draw_rect(Rect2(dx, palma.end.y, 4, comp), cor)
 				else:
 					draw_rect(Rect2(dx, palma.position.y - comp, 4, comp), cor)
+		"anjinho":
+			# Túnica em triângulo, asinhas, cabeça e o resplendor.
+			var asa := sin(_t * 9.0) * 3.0
+			draw_colored_polygon(PackedVector2Array([Vector2(-12, 0), Vector2(12, 0), Vector2(0, -30)]), cor)
+			draw_colored_polygon(PackedVector2Array([Vector2(-4, -24), Vector2(-16, -34 - asa), Vector2(-6, -16)]), cor)
+			draw_colored_polygon(PackedVector2Array([Vector2(4, -24), Vector2(16, -34 - asa), Vector2(6, -16)]), cor)
+			draw_circle(Vector2(0, -35), 6.5, cor)
+			draw_arc(Vector2(0, -37), 10, PI, TAU, 12, Nivel.COR_OURO, 2)
 		"ajoelhado":
 			# Romeiro de cera de joelhos: tronco curvado, cabeça baixa, joelhos no chão.
 			var passo := sin(_t * 5.0) * 2.0

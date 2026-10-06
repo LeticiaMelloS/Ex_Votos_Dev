@@ -3,7 +3,7 @@
 ;; Conteúdo: Rua íngreme · criaturas seguem as procissões
 ;; Propósito: Fuga do Andor Vazio (encontro 2) · primeiro combate leve com a vela
 @nome C2-07 · Ladeira do Meio
-@dica Fuga do Andor Vazio (encontro 2) · primeiro combate leve com a vela
+@dica Fuga do Andor Vazio (encontro 2): saia da rua pelas escadas das sacadas, ou passe por baixo dos varais, ajoelhada
 @sala C2-07
 @criatura maozinha
 @tutorial J — golpe de chama. A cera derrete, mas se refaz: lutar só compra tempo.

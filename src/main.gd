@@ -48,6 +48,11 @@ var _chao_seguro_sala := ""
 var _criaturas_sala: Array[CriaturaCera] = []
 ## Cera juntada nos protótipos (no Mundo, fica em mundo.cera).
 var _cera_prototipo := 0
+## O Andor Vazio: fica fora das salas, para poder seguir a protagonista de uma sala a outra.
+var andor: Andor
+## Contagem até o cortejo aparecer (encontro 2: sempre avisa antes).
+var _cortejo_em := 0.0
+var _avisou_andor := false
 
 
 func _ready() -> void:
@@ -90,6 +95,7 @@ func _montar(caminho: String) -> bool:
 	add_child(jogadora)
 	jogadora.golpeou.connect(_ao_golpear)
 	jogadora.apagou.connect(_ao_apagar)
+	jogadora.fez_barulho.connect(_ao_fazer_barulho)
 	respawn = nivel.pe_da_celula(nivel.inicio)
 	jogadora.reiniciar_em(respawn)
 	if nivel.meta.has("sem_trancas"):
@@ -103,6 +109,8 @@ func _montar(caminho: String) -> bool:
 	_atualizar_escuridao()
 	_camada_brilho = _nova_camada(2, true)
 	_camada_brilho.add_child(nivel.brilho)
+	andor = Andor.new()
+	_camada_brilho.add_child(andor)
 
 	promessas = Promessas.new()
 	promessas.nivel = nivel
@@ -125,14 +133,20 @@ func _montar(caminho: String) -> bool:
 func _criar_criaturas() -> void:
 	_criaturas_sala.clear()
 	for d in nivel.criaturas_mapa:
-		var c := CriaturaCera.new()
-		c.tipo = String(d["texto"]).strip_edges()
-		c.nivel = nivel
-		c.alvo = jogadora
-		c.preparar(d["celula"])
-		c.soltou_cera.connect(_ganhar_cera)
-		nivel.brilho.add_child(c)
-		_criaturas_sala.append(c)
+		_nova_criatura(String(d["texto"]).strip_edges(), d["celula"])
+
+
+func _nova_criatura(tipo: String, cel: Vector2i, dir := 0) -> CriaturaCera:
+	var c := CriaturaCera.new()
+	c.tipo = tipo
+	c.nivel = nivel
+	c.alvo = jogadora
+	c.dir_inicial = dir
+	c.preparar(cel)
+	c.soltou_cera.connect(_ganhar_cera)
+	nivel.brilho.add_child(c)
+	_criaturas_sala.append(c)
+	return c
 
 
 func carregar_nivel(i: int) -> void:
@@ -210,6 +224,7 @@ func iniciar_mundo(do_zero := false) -> void:
 		jogadora.tem_mao = save.get("mao", true)
 		jogadora.pode_agarrar = jogadora.tem_mao
 		jogadora.vela_forte = save.get("vela_forte", false)
+		jogadora.tem_matraca = save.get("matraca", false)
 		jogadora.reiniciar_em(Vector2(save["x"], save["y"]))
 		_ajustar_camera(true)
 	respawn = jogadora.global_position
@@ -288,6 +303,10 @@ func _ao_entrar_sala() -> void:
 	hud.mapa.mundo = mundo
 	hud.mapa.sala_atual = sala_atual
 	hud.mapa.queue_redraw()
+	nivel.objetos_pegos.clear()
+	if jogadora.tem_matraca:
+		nivel.objetos_pegos.append("matraca")
+	_preparar_andor()
 
 
 func _ao_mudar_grupo(letra: String, ativo: bool) -> void:
@@ -336,9 +355,15 @@ func _descansar() -> bool:
 	var deu := _dar_presente()
 	respawn = nivel.pe_da_celula(Vector2i(nivel.coluna(jogadora.global_position), floori((jogadora.global_position.y - 10) / Nivel.TILE)))
 	respawn_sala = sala_atual
-	mundo.salvar({"sala": sala_atual, "x": respawn.x, "y": respawn.y,
-		"trancas": jogadora.tem_trancas, "mao": jogadora.tem_mao, "vela_forte": jogadora.vela_forte})
+	_salvar()
 	return deu
+
+
+## Grava o jogo no último altar (com o que ela tem agora).
+func _salvar() -> void:
+	mundo.salvar({"sala": respawn_sala, "x": respawn.x, "y": respawn.y,
+		"trancas": jogadora.tem_trancas, "mao": jogadora.tem_mao, "vela_forte": jogadora.vela_forte,
+		"matraca": jogadora.tem_matraca})
 
 
 ## "@presente vela_irmandade Texto": algo que a sala dá no primeiro descanso no altar.
@@ -366,8 +391,10 @@ func _physics_process(delta: float) -> void:
 	promessas.processar()
 	oferendas.processar()
 	_checar_contato()
-	if jogadora == null:
-		return
+	if mundo:
+		_atualizar_andor(delta)
+		_pegar_objetos()
+		_tirar_criaturas_que_sairam()
 	if mundo:
 		var t := nivel.tamanho_px()
 		var p := jogadora.global_position
@@ -428,6 +455,8 @@ func _process(delta: float) -> void:
 	var altar := _altar_proximo()
 	if _menu_altar != "":
 		hud.definir_dica("")
+	elif _perto_do_andor() and not jogadora.tem_trancas:
+		hud.definir_dica("E — amarrar a corda ao andor")
 	elif _bilhete_proximo() != "":
 		hud.definir_dica("E — ler o bilhete")
 	elif nivel.altares_oferta.has(altar):
@@ -492,7 +521,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("interagir") and not _terminou:
 		var altar := _altar_proximo()
 		var bilhete := _bilhete_proximo()
-		if altar != "":
+		if _perto_do_andor() and not jogadora.tem_trancas:
+			_amarrar_andor()
+		elif altar != "":
 			_abrir_menu(altar)
 		elif bilhete != "":
 			_menu_altar = "?"
@@ -674,11 +705,179 @@ func _checar_contato() -> void:
 
 ## A vida chegou a zero: a vela se apaga e ela acorda no último altar, sem outro custo.
 func _ao_apagar() -> void:
-	hud.mostrar_mensagem("A vela se apagou.", 3.0)
+	if andor and andor.modo == Andor.Modo.GUIADO:
+		andor.modo = Andor.Modo.NENHUM
+		hud.mostrar_mensagem("A vela se apagou. A corda escapou, e o andor voltou sozinho ao Largo do Alto.", 4.0)
+	else:
+		hud.mostrar_mensagem("A vela se apagou.", 3.0)
 	_renascer()
 	jogadora.curar()
 	for c in _criaturas_sala:
 		c.reformar()
+
+
+## A matraca: as criaturas que ouvem reagem ao barulho.
+func _ao_fazer_barulho(p: Vector2) -> void:
+	for c in _criaturas_sala:
+		c.ouvir(p)
+
+
+## Objetos ("%"): pegar é só encostar.
+func _pegar_objetos() -> void:
+	var cel := Vector2i(nivel.coluna(jogadora.global_position), floori((jogadora.global_position.y - 10) / Nivel.TILE))
+	for o in nivel.objetos:
+		var c: Vector2i = o["celula"]
+		if absi(c.x - cel.x) > 1 or absi(c.y - cel.y) > 1:
+			continue
+		var partes := String(o["texto"]).split(" ", false, 1)
+		if partes.is_empty() or nivel.objetos_pegos.has(partes[0]):
+			continue
+		match partes[0]:
+			"matraca":
+				jogadora.tem_matraca = true
+		nivel.objetos_pegos.append(partes[0])
+		nivel.brilho.queue_redraw()
+		hud.mostrar_mensagem(partes[1] if partes.size() > 1 else "Você pegou algo.", 8.0)
+
+
+## Criaturas que saíram da sala (os anjinhos seguem o cortejo e vão embora).
+func _tirar_criaturas_que_sairam() -> void:
+	var t := nivel.tamanho_px()
+	for c in _criaturas_sala.duplicate():
+		if c.position.x < -80.0 or c.position.x > t.x + 80.0 or c.position.y > t.y + 200.0:
+			_criaturas_sala.erase(c)
+			c.queue_free()
+
+
+# ------------------------------------------------------------ o Andor Vazio
+
+## "vagando" → (vela da irmandade) → "bloqueando" → (guiado até o altar) → "resolvido".
+func _estado_andor() -> String:
+	var e: String = mundo.marcos.get("andor", "vagando")
+	# Na volta do Alto da Cruz (com a vela da irmandade), ele para no Largo do Alto: encontro 3.
+	if e == "vagando" and jogadora.vela_forte:
+		e = "bloqueando"
+		mundo.marcos["andor"] = e
+	return e
+
+
+## O que o Andor faz nesta sala (biblia/05-criaturas.md, 5.5, e a Região 1).
+func _preparar_andor() -> void:
+	_cortejo_em = 0.0
+	andor.nivel = nivel
+	andor.entrar_sala(mundo.origem(sala_atual))
+	if andor.modo == Andor.Modo.GUIADO:
+		# A procissão inteira tenta impedir: anjinhos descem contra ela.
+		_cortejo_contra(2)
+		return
+	andor.modo = Andor.Modo.NENHUM
+	match _estado_andor():
+		"vagando":
+			if sala_atual == "C1-08":
+				# Encontro 1: ele passa ao longe, enorme, sem ninguém carregando.
+				andor.direcao = 1
+				andor.colocar(Vector2(-300, 21 * Nivel.TILE), Andor.Modo.FUNDO)
+			elif sala_atual == "C2-07" and not mundo.marcos.get("fuga", false):
+				# Encontro 2: o cortejo desce a rua. Sempre avisa antes.
+				_cortejo_em = 3.5
+				hud.mostrar_mensagem("Matracas ao longe. A procissão está descendo a ladeira.", 4.0)
+		"bloqueando":
+			if sala_atual == "C2-13":
+				var x := 36.0 * Nivel.TILE
+				andor.colocar(Vector2(x, nivel.chao_em(x, 24 * Nivel.TILE)), Andor.Modo.BLOQUEIO)
+		"resolvido":
+			if mundo.marcos.has("andor_sala") and mundo.marcos["andor_sala"] == sala_atual:
+				andor.colocar(Vector2(mundo.marcos["andor_x"], mundo.marcos["andor_y"]), Andor.Modo.PARADO)
+
+
+func _atualizar_andor(delta: float) -> void:
+	if _cortejo_em > 0.0:
+		_cortejo_em -= delta
+		if _cortejo_em <= 0.0:
+			_comecar_cortejo()
+	match andor.modo:
+		Andor.Modo.FUNDO:
+			if andor.position.x > nivel.tamanho_px().x + 300.0:
+				andor.colocar(Vector2(-300, 21 * Nivel.TILE), Andor.Modo.FUNDO)
+		Andor.Modo.CORTEJO:
+			# Não mata de uma vez: empurra e machuca. Ajoelhada, ela passa por baixo dos varais.
+			if andor.area_perigosa().intersects(_corpo_jogadora()):
+				jogadora.receber_dano(andor.position + Vector2(0, -100))
+			if andor.position.x < -Andor.LARGURA:
+				andor.modo = Andor.Modo.NENHUM
+		Andor.Modo.BLOQUEIO:
+			if jogadora.tem_trancas and _perto_do_andor() and not _avisou_andor:
+				_avisou_andor = true
+				_avisar("Ninguém carrega este andor. E ele não deixa passar.")
+		Andor.Modo.GUIADO:
+			andor.registrar_passo(mundo.origem(sala_atual) + jogadora.global_position)
+			if sala_atual == "C4-02" and Rect2(Vector2.ZERO, nivel.tamanho_px()).has_point(andor.position):
+				_resolver_andor()
+
+
+func _comecar_cortejo() -> void:
+	var t := nivel.tamanho_px()
+	# Entra logo fora da tela, ladeira acima (à direita), e desce a rua.
+	var x := minf(jogadora.global_position.x + 1150.0, t.x + Andor.LARGURA)
+	andor.direcao = -1
+	andor.colocar(Vector2(x, nivel.chao_em(minf(x, t.x - 40.0), 24 * Nivel.TILE)), Andor.Modo.CORTEJO)
+	# Os anjinhos vão na frente.
+	for i in 3:
+		var col := mini(floori((x - Andor.LARGURA) / Nivel.TILE), floori(t.x / Nivel.TILE) - 2) - i * 3
+		var chao := nivel.chao_em(col * Nivel.TILE, 24 * Nivel.TILE)
+		_nova_criatura("anjinho", Vector2i(col, floori(chao / Nivel.TILE) - 1), -1)
+	mundo.marcos["fuga"] = true
+
+
+## Durante o encontro 4: anjinhos vêm do lado oposto ao dela (nunca em sala de altar).
+func _cortejo_contra(n: int) -> void:
+	if not nivel.altares.is_empty():
+		return
+	var t := nivel.tamanho_px()
+	var lado := 1 if jogadora.global_position.x < t.x * 0.5 else -1
+	for i in n:
+		var x: float = (t.x - (3 + i * 3) * Nivel.TILE) if lado > 0 else float((3 + i * 3) * Nivel.TILE)
+		var chao := nivel.chao_em(x, jogadora.global_position.y)
+		_nova_criatura("anjinho", Vector2i(floori(x / Nivel.TILE), floori(chao / Nivel.TILE) - 1), -lado)
+
+
+func _perto_do_andor() -> bool:
+	if andor == null or andor.modo != Andor.Modo.BLOQUEIO:
+		return false
+	return absf(jogadora.global_position.x - andor.position.x) < Andor.LARGURA * 0.5 + 60.0 \
+		and absf(jogadora.global_position.y - andor.position.y) < 120.0
+
+
+## Encontro 4: a trança vira a corda que conduz o andor, como a corda do Círio conduz a berlinda.
+func _amarrar_andor() -> void:
+	andor.amarrar()
+	hud.mostrar_mensagem("Você amarra a corda das tranças aos varais. O andor obedece. Leve-o até o altar da Igreja do Alto.", 6.0)
+
+
+func _resolver_andor() -> void:
+	andor.modo = Andor.Modo.PARADO
+	mundo.marcos["andor"] = "resolvido"
+	mundo.marcos["andor_sala"] = sala_atual
+	mundo.marcos["andor_x"] = andor.position.x
+	mundo.marcos["andor_y"] = andor.position.y
+	# A procissão terminou: a porteira (Sertão) e a cripta (Sala dos Milagres) se abrem.
+	for s in ["C2-01", "C4-04"]:
+		if not mundo.grupos.has(s):
+			mundo.grupos[s] = {}
+		mundo.grupos[s]["D"] = false
+	# A dívida da Ladeira está paga: os anjinhos viram ex-votos.
+	for c in _criaturas_sala.duplicate():
+		if c.tipo == "anjinho":
+			_criaturas_sala.erase(c)
+			nivel.adicionar_ex_voto(c.position)
+			c.queue_free()
+	_salvar()
+	hud.mostrar_mensagem("O andor chega ao altar. Por um instante, há ombros sob os varais: a irmandade inteira, de cera, carregando. A procissão terminou.", 9.0)
+
+
+func _corpo_jogadora() -> Rect2:
+	var h := jogadora.altura_atual()
+	return Rect2(jogadora.global_position - Vector2(Protagonista.LARGURA * 0.5, h), Vector2(Protagonista.LARGURA, h))
 
 
 func _ganhar_cera(n: int) -> void:

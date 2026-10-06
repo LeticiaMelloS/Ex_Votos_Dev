@@ -10,6 +10,8 @@ signal golpeou(area: Rect2, forte: bool)
 ## A vida chegou a zero: a vela se apagou.
 signal apagou
 signal pulou(forte: bool)
+## Tocou a matraca neste ponto (criaturas que ouvem reagem).
+signal fez_barulho(ponto: Vector2)
 
 const LARGURA := 26.0
 const ALTURA := 70.0
@@ -52,6 +54,8 @@ var tem_trancas := true
 var tem_mao := true
 ## Vela da irmandade: a chama derrete a cera velha.
 var vela_forte := false
+## A matraca (C2-09): faz barulho, que atrai e assusta criaturas.
+var tem_matraca := false
 var vida := 3
 
 ## Usado para achar a corda (tranças) no mapa.
@@ -84,6 +88,7 @@ var _recarga := 0.0
 var _golpe := 0.0
 var _invulneravel := 0.0
 var _empurrao := 0.0
+var _barulho := 0.0
 var _forma := CollisionShape2D.new()
 var _ret := RectangleShape2D.new()
 
@@ -181,6 +186,10 @@ func _physics_process(delta: float) -> void:
 		definir_luz(not luz_acesa)
 	if controle_ativo and Input.is_action_just_pressed("chama"):
 		golpear()
+	_barulho -= delta
+	if controle_ativo and tem_matraca and _barulho <= 0.0 and Input.is_action_just_pressed("matraca"):
+		_barulho = 0.8
+		fez_barulho.emit(centro())
 	if _subindo:
 		return
 	if pendurada:
@@ -336,8 +345,18 @@ func _subir_degrau() -> void:
 func _corda_aqui() -> bool:
 	if nivel == null:
 		return false
-	var c := nivel.celula(centro())
-	return c == "L" or (c == "K" and nivel.grupos_ativos["K"])
+	return _escada(nivel.celula(centro()), centro())
+
+
+## Escada de mão, corda (depois das tranças) ou um portão aberto no meio de uma escada (a cripta).
+func _escada(c: String, p: Vector2) -> bool:
+	if c == "L" or (c == "K" and nivel.grupos_ativos["K"]):
+		return true
+	if c == "D" and not nivel.grupos_ativos["D"]:
+		var cima := nivel.celula(p - Vector2(0, Nivel.TILE))
+		var baixo := nivel.celula(p + Vector2(0, Nivel.TILE))
+		return "LK".contains(cima) or "LK".contains(baixo)
+	return false
 
 
 func _agarrar_corda() -> void:
@@ -372,7 +391,7 @@ func _processar_corda() -> void:
 	# Os pés não passam do alto da última célula de corda ou escada.
 	# (No modo Mundo, a escada continua na sala de cima: quem cuida da troca é o main.)
 	var acima := nivel.celula(global_position - Vector2(0, 1))
-	if acima != "K" and acima != "L" and global_position.y - 1.0 >= 0.0:
+	if not _escada(acima, global_position - Vector2(0, 1)) and global_position.y - 1.0 >= 0.0:
 		var linha := floori((global_position.y - 1.0) / Nivel.TILE)
 		global_position.y = (linha + 1) * Nivel.TILE
 
@@ -453,6 +472,11 @@ func _draw() -> void:
 	if carregando:
 		draw_rect(Rect2(-8, -h - 22, 16, 22), Nivel.COR_CERA)
 
+	if _barulho > 0.2:
+		# O som da matraca: anéis que se abrem.
+		var raio := (0.8 - _barulho) * 400.0
+		draw_arc(Vector2(0, -h * 0.5), raio, 0, TAU, 32, Color(0.2, 0.15, 0.1, _barulho), 3)
+		draw_arc(Vector2(0, -h * 0.5), raio * 0.6, 0, TAU, 32, Color(0.2, 0.15, 0.1, _barulho), 2)
 	# Fita no pulso: o único vermelho do jogo.
 	var pulso := Vector2(-direcao * (LARGURA * 0.5 + 1), -h * 0.5 + 4)
 	draw_rect(Rect2(pulso.x - 4, pulso.y - 2, 8, 4), Color(0.72, 0.07, 0.07))
